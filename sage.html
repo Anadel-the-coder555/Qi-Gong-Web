@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>White Sage</title>
+<link rel="stylesheet" href="sage.css">
+</head>
+
+<body>
+
+<div id="deckSelector">
+    <h3>Choose Deck</h3>
+
+    <!-- Tarot / Oracle slide toggle -->
+    <div id="deckTypeToggle">
+        <button class="deckTypeBtn active" data-type="tarot">Tarot</button>
+        <button class="deckTypeBtn" data-type="oracle">Oracle</button>
+    </div>
+
+    <!-- Deck buttons injected here by JS, filtered by data-type -->
+
+</div>
+
+
+<div id="mainContent">
+  <div id="buttonBar">
+    <div id="toggleDeckBar">&#10095;</div>
+    <button onclick="shuffleDeck()">Shuffle Current Deck</button>
+    <button id="refreshBtn" onclick="refreshReading()">Refresh Reading</button>
+  </div>
+
+  <div id="table"></div>
+  <div id="deck"></div>
+</div>
+
+<!-- Settings Bar -->
+<div id="settingsBar">
+  <h3>Settings</h3>
+
+  <label for="bgUpload">&#8679; Choose image file </label>
+  <input type="file" id="bgUpload" accept="image/*">
+
+  <button id="openBgPicker">Choose Background</button>
+
+  <hr class="settingsDivider">
+
+  <button id="openLayoutPicker">Choose Layout</button>
+
+  <hr class="settingsDivider">
+
+  <button id="openAudioLibrary">Audio Library</button>
+
+  <hr class="settingsDivider">
+
+<button id="openCustomDeckBuilder" onclick="openCustomDeckBuilder()">Create Custom Deck</button>
+
+</div>
+
+<!-- Settings Toggle Button -->
+<div id="toggleSettingsBar">
+  <img src="img/tarotlogo.png" alt="settings">
+</div>
+
+<!-- Layout Picker Modal -->
+<div id="layoutPickerOverlay">
+  <div id="layoutPickerModal">
+    <h3>Choose Layout</h3>
+    <div id="layoutGrid">
+      <button onclick="openCustomLayoutBuilder()">Custom</button>  <!-- ADD THIS -->
+      <button onclick="setLayout('tarot');closeLayoutPicker()">2x4</button>
+      <button onclick="setLayout('dragon');closeLayoutPicker()">Dragon Rune</button>
+      <button onclick="setLayout('circle');closeLayoutPicker()">Circular</button>
+      <button onclick="setLayout('slant');closeLayoutPicker()">Slant</button>
+      <button onclick="setLayout('celtic');closeLayoutPicker()">Celtic Cross</button>
+      <button onclick="setLayout('vformation');closeLayoutPicker()">V-Formation</button>
+    </div>
+    <button id="layoutPickerCancel">Cancel</button>
+  </div>
+</div>
+
+<!-- Background Picker Modal -->
+<div id="bgPickerOverlay">
+  <div id="bgPickerModal">
+    <h3>Choose a Background</h3>
+
+    <div id="bgViewToggle">
+      <button class="bgViewBtn active" id="showAll">All</button>
+      <button class="bgViewBtn" id="showCategories">Categories</button>
+    </div>
+
+    <div id="bgAllGrid"></div>
+    <div id="bgPickerGrid"></div>
+
+    <div id="bgPickerActions">
+      <button id="bgPickerConfirm">Choose</button>
+      <button id="bgPickerCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Audio Library Modal -->
+<div id="audioLibraryOverlay">
+  <div id="audioLibraryModal">
+    <h3>Audio Library</h3>
+
+    <div id="audioTrackList">
+
+      <div class="audioTrack">
+        <div class="audioTrackInfo">
+          <span class="audioTrackName">Ethereal</span>
+          <span class="audioTrackArtist">Lotus • 4:43</span>
+        </div>
+        <div class="audioTrackControls">
+          <button class="audioPlayBtn" onclick="playTrack(this, 'audio/ethereal.mp3')">▶ Play</button>
+          <a class="audioDownloadBtn" href="audio/ethereal.mp3" download>⬇</a>
+        </div>
+      </div>
+
+      <div class="audioTrack">
+        <div class="audioTrackInfo">
+          <span class="audioTrackName">Spirit</span>
+          <span class="audioTrackArtist">Lotus • 2:50</span>
+        </div>
+        <div class="audioTrackControls">
+          <button class="audioPlayBtn" onclick="playTrack(this, 'audio/spirit.mp3')">▶ Play</button>
+          <a class="audioDownloadBtn" href="audio/spirit.mp3" download>⬇</a>
+        </div>
+      </div>
+
+      <div class="audioTrack">
+        <div class="audioTrackInfo">
+          <span class="audioTrackName">Dream</span>
+          <span class="audioTrackArtist">Lotus • 2:45</span>
+        </div>
+        <div class="audioTrackControls">
+          <button class="audioPlayBtn" onclick="playTrack(this, 'audio/dream.mp3')">▶ Play</button>
+          <a class="audioDownloadBtn" href="audio/dream.mp3" download>⬇</a>
+        </div>
+      </div>
+
+      <div class="audioTrack">
+        <div class="audioTrackInfo">
+          <span class="audioTrackName">Quiet Heart</span>
+          <span class="audioTrackArtist">Lotus • 2:23</span>
+        </div>
+        <div class="audioTrackControls">
+          <button class="audioPlayBtn" onclick="playTrack(this, 'audio/quietheart.mp3')">▶ Play</button>
+          <a class="audioDownloadBtn" href="audio/quietheart.mp3" download>⬇</a>
+        </div>
+      </div>
+
+      <div class="audioTrack">
+        <div class="audioTrackInfo">
+          <span class="audioTrackName">Lantern</span>
+          <span class="audioTrackArtist">Lotus • 3:23</span>
+        </div>
+        <div class="audioTrackControls">
+          <button class="audioPlayBtn" onclick="playTrack(this, 'audio/lantern.mp3')">▶ Play</button>
+          <a class="audioDownloadBtn" href="audio/lantern.mp3" download>⬇</a>
+        </div>
+      </div>
+
+
+    </div>
+
+    <audio id="audioPlayer"></audio>
+
+    <button id="audioLibraryCancel">Close</button>
+  </div>
+</div>
+
+<!-- Custom Layout Builder Modal -->
+<div id="customLayoutOverlay">
+  <div id="customLayoutModal">
+
+    <!-- ── PAGE 1: Grid builder ── -->
+    <div id="customPage1">
+      <div id="customLayoutHeader">
+        <span>Custom Layout</span>
+        <button onclick="document.getElementById('customLayoutOverlay').classList.remove('open')">✕</button>
+      </div>
+      <div id="customLayoutBody">
+        <div id="customGridWrap">
+          <div id="customGrid"></div>
+        </div>
+        <div id="customSidePanel">
+          <div id="customCount"><span id="customCountNum">0</span> cards</div>
+          <div id="customPosList"></div>
+        </div>
+      </div>
+      <div id="customLayoutFooter">
+        <button onclick="clearCustomGrid()">Clear</button>
+        <button id="customNextBtn" onclick="goToPage2()" disabled>Next →</button>
+      </div>
+    </div>
+
+    <!-- ── PAGE 2: Rotation picker ── -->
+    <div id="customPage2" style="display:none;">
+      <div id="customLayoutHeader">
+        <span>Rotation Setup</span>
+        <button onclick="goToPage1()">← Back</button>
+      </div>
+      <div id="customPage2Body">
+        <div id="customPage2Hint">Click a card to rotate it sideways</div>
+        <div id="customPreviewArea"></div>
+      </div>
+      <div id="customLayoutFooter">
+        <button onclick="clearRotations()">Clear rotations</button>
+        <button id="customConfirmBtn" onclick="confirmLayout()">Confirm Layout</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let selected = [];
+
+  // Build the 6x6 grid
+  const grid = document.getElementById('customGrid');
+  for (let r = 0; r < 6; r++) {
+    for (let c = 0; c < 6; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'customCell';
+      cell.dataset.r = r;
+      cell.dataset.c = c;
+      cell.onclick = () => toggleCustomCell(cell, r, c);
+      grid.appendChild(cell);
+    }
+  }
+
+  function toggleCustomCell(cell, r, c) {
+    const key = `${r}-${c}`;
+    const idx = selected.findIndex(s => s.key === key);
+    if (idx > -1) {
+      selected.splice(idx, 1);
+      cell.classList.remove('active');
+      cell.textContent = '';
+    } else {
+      selected.push({ key, r, c });
+      cell.classList.add('active');
+    }
+    // Re-number all active cells
+    selected.forEach((s, i) => {
+      const el = grid.querySelector(`[data-r="${s.r}"][data-c="${s.c}"]`);
+      el.textContent = i + 1;
+    });
+    document.getElementById('customCountNum').textContent = selected.length;
+    document.getElementById('customNextBtn').disabled = selected.length === 0;
+    // Update list
+    document.getElementById('customPosList').innerHTML = selected
+      .map((s, i) => `<div class="customPosItem">${i+1} — row ${s.r+1}, col ${s.c+1}</div>`)
+      .join('');
+  }
+
+  function clearCustomGrid() {
+    selected = [];
+    grid.querySelectorAll('.customCell').forEach(c => {
+      c.classList.remove('active');
+      c.textContent = '';
+    });
+    document.getElementById('customCountNum').textContent = 0;
+    document.getElementById('customNextBtn').disabled = true;
+    document.getElementById('customPosList').innerHTML = '';
+  }
+
+  function goToPage2() {
+    if (selected.length === 0) return;
+    document.getElementById('customPage1').style.display = 'none';
+    document.getElementById('customPage2').style.display = 'flex';
+    buildRotationPreview();
+  }
+
+  function goToPage1() {
+    document.getElementById('customPage2').style.display = 'none';
+    document.getElementById('customPage1').style.display = 'flex';
+  }
+
+  let rotatedSet = new Set();
+  const CARD_W = 36, CARD_H = 58;
+
+  function buildRotationPreview() {
+    const area = document.getElementById('customPreviewArea');
+    area.innerHTML = '';
+    rotatedSet.clear();
+    selected.forEach((cell, i) => {
+      const card = document.createElement('div');
+      card.className = 'previewCard';
+      const xPct = Math.round(10 + (cell.c / 5) * 80);
+      const yPct = Math.round(10 + (cell.r / 5) * 80);
+      card.style.left   = xPct + '%';
+      card.style.top    = yPct + '%';
+      card.style.width  = CARD_W + 'px';
+      card.style.height = CARD_H + 'px';
+      card.textContent  = i + 1;
+      card.addEventListener('click', () => toggleRotation(i, card));
+      area.appendChild(card);
+    });
+  }
+
+  function toggleRotation(i, card) {
+    if (rotatedSet.has(i)) {
+      rotatedSet.delete(i);
+      card.classList.remove('rotated');
+      card.style.width  = CARD_W + 'px';
+      card.style.height = CARD_H + 'px';
+    } else {
+      rotatedSet.add(i);
+      card.classList.add('rotated');
+      card.style.width  = CARD_H + 'px';
+      card.style.height = CARD_W + 'px';
+    }
+  }
+
+  function clearRotations() {
+    rotatedSet.clear();
+    document.querySelectorAll('.previewCard').forEach(c => {
+      c.classList.remove('rotated');
+      c.style.width  = CARD_W + 'px';
+      c.style.height = CARD_H + 'px';
+    });
+  }
+
+  function confirmLayout() {
+    selected.forEach((cell, i) => {
+      cell.rotate = rotatedSet.has(i) ? 90 : 0;
+    });
+    saveCustomLayout(selected);
+  }
+</script>
+
+  </div>
+</div>
+
+<div id="customDeckOverlay">
+  <div id="customDeckModal">
+
+    <div id="customDeckHeader">
+      <div id="customDeckTabs">
+        <button class="customDeckTabSwitch active" onclick="switchDeckModalTab('create', this)">Create</button>
+      </div>
+      <button onclick="closeCustomDeckBuilder()">✕</button>
+    </div>
+
+    <!-- ── VIEW 1: Create ── -->
+    <div id="customDeckViewCreate">
+      <div id="customDeckBody">
+
+        <div id="customDeckMain">
+          <div class="customDeckField">
+            <label>Deck Name</label>
+            <input type="text" id="customDeckName" placeholder="My Custom Deck" maxlength="40" />
+          </div>
+
+          <div class="customDeckField">
+            <label>Type</label>
+            <div id="customDeckTypeToggle">
+              <button class="customDeckTypeBtn active" data-type="tarot" onclick="setCustomDeckType(this)">Tarot (78)</button>
+              <button class="customDeckTypeBtn" data-type="oracle" onclick="setCustomDeckType(this)">Oracle</button>
+            </div>
+          </div>
+
+          <div class="customDeckField">
+            <label>Appears under tab</label>
+            <div id="customDeckTabToggle">
+              <button class="customDeckTabBtn active" data-tab="tarot" onclick="setCustomDeckTab(this)">Tarot</button>
+              <button class="customDeckTabBtn" data-tab="oracle" onclick="setCustomDeckTab(this)">Oracle</button>
+            </div>
+          </div>
+
+          <div class="customDeckField">
+            <label>Cover Image</label>
+            <div class="customDeckUploadRow">
+              <label class="customDeckUploadBtn" for="customDeckCoverInput">Choose cover…</label>
+              <input type="file" id="customDeckCoverInput" accept="image/*" onchange="handleCoverUpload(event)" />
+              <span id="customDeckCoverName">No file chosen</span>
+            </div>
+            <img id="customDeckCoverPreview" src="" alt="" style="display:none;" />
+          </div>
+
+          <div class="customDeckField">
+            <label>Bulk Card Images</label>
+            <div class="customDeckUploadRow">
+              <label class="customDeckUploadBtn" for="customDeckCardsInput">Upload folder or files…</label>
+              <input type="file" id="customDeckCardsInput" accept="image/*" multiple webkitdirectory directory onchange="handleBulkCardUpload(event)" />
+              <span>Pick a folder or several card images at once</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="customDeckPreviewPanel">
+          <div class="customDeckPanelHeader">Card Images</div>
+          <div id="createCarousel" class="deckCarousel"></div>
+        </div>
+
+      </div>
+      <div id="customDeckFooter">
+        <button onclick="closeCustomDeckBuilder()">Cancel</button>
+        <button id="customDeckSaveBtn" onclick="saveCustomDeck()" disabled>Create Deck</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Scripts — always last, only once -->
+<script src="sage.js"></script>
+</body>
+</html>
