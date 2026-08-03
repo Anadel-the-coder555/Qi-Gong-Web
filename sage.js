@@ -37,104 +37,6 @@ const WANDS = [
 
 const STANDARD_78 = [...MAJOR_ARCANA, ...CUPS, ...PENTACLES, ...SWORDS, ...WANDS];
 
-// deck7 major arcana omits The Chariot, Strength, The Hermit
-const MAJOR_ARCANA_DECK7 = MAJOR_ARCANA.filter(c =>
-    !["The Chariot", "Strength", "The Hermit"].includes(c)
-);
-
-// =============================================================================
-// ORACLE CARD LISTS
-// =============================================================================
-
-const ORACLE_CARD_LISTS = {
-    deck8: [
-        "The Fool", "The Magician", "The High Priestess", "The Empress", "The Emperor",
-        "The Hierophant", "The Lovers", "The Chariot", "Strength", "The Hermit",
-        "Wheel of Fortune", "Justice", "The Hanged Man", "Death", "Temperance", "The Devil"
-    ],
-    deck11: [
-        "The Fool", "The Magician", "The High Priestess", "The Empress", "The Emperor",
-        "The Hierophant", "The Lovers", "The Chariot", "Strength", "The Hermit",
-        "Wheel of Fortune", "Justice", "The Hanged Man", "Death", "Temperance", "The Devil"
-    ],
-    deck12: [
-        "The Fool", "The Magician", "The High Priestess", "The Empress", "The Emperor",
-        "The Hierophant", "The Lovers", "The Chariot", "Strength", "The Hermit",
-        "Wheel of Fortune", "Justice", "The Hanged Man", "Death", "Temperance", "The Devil"
-    ],
-    deck13: [
-        "The Chariot", "Strength", "The Hermit", "Wheel of Fortune", "Justice",
-        "The Hanged Man", "Death", "The Devil", "The Tower", "The Star",
-        "The Moon", "The Sun", "Divine Timing", "Judgement", "The World", "Ace of Cups"
-    ],
-    deck14: [
-        "The Fool", "The Magician", "The High Priestess", "The Empress", "The Emperor",
-        "The Hierophant", "The Lovers", "The Chariot", "Strength", "The Hermit",
-        "Wheel of Fortune", "Justice"
-    ],
-    deck15: [
-        "The Fool", "The Magician", "The High Priestess", "The Empress", "The Emperor",
-        "The Hierophant", "The Lovers", "The Chariot", "Strength", "The Hermit",
-        "Wheel of Fortune", "Justice", "The Hanged Man", "Death", "Temperance", "The Devil"
-    ],
-    deck16: [
-        "The Fool", "The Magician", "The High Priestess", "The Empress", "The Emperor",
-        "The Hierophant", "The Lovers", "The Chariot", "Strength", "The Hermit",
-        "Wheel of Fortune", "Justice", "The Hanged Man", "Death", "Temperance", "The Devil"
-    ],
-    deck17: [
-        "The Fool", "The Magician", "The High Priestess", "The Empress", "The Emperor",
-        "The Hierophant", "The Lovers", "The Chariot", "Strength", "The Hermit",
-        "Wheel of Fortune", "Justice", "The Hanged Man", "Death", "Temperance", "The Devil"
-    ],
-    deck18: [
-        "Card One", "Card Two", "Card Three", "Card Four", "Card Five", "Card Six", "Card Seven", "Card Eight", 
-        "Card Nine", "Card Ten", "Card Eleven", "Card Twelve", "Card Thirteen", "Card Fourteen", "Card Fifteen", 
-        "Card Sixteen", "Card Seventeen", "Card Eighteen", "Card Nineteen", "Card Twenty", "Card Twenty-One", 
-        "Card Twenty-Two", "Card Twenty-Three", "Card Twenty-Four", "Card Twenty-Five", "Card Twenty-Six",
-        "Card Twenty-Seven", "Card Twenty-Eight", "Card Twenty-Nine", "Card Thirty", "Card Thirty-One",
-        "Card Thirty-Two", "Card Thirty-Three", "Card Thirty-Four", "Card Thirty-Five", "Card Thirty-Six",
-        "Card Thirty-Seven", "Card Thirty-Eight",  
-    ],
-    deck19: [
-        "Card One", "Card Two", "Card Three", "Card Four", "Card Five", "Card Six", "Card Seven", "Card Eight", 
-        "Card Nine", "Card Ten", "Card Eleven", "Card Twelve", "Card Thirteen", "Card Fourteen", "Card Fifteen", 
-        "Card Sixteen", "Card Seventeen", "Card Eighteen", "Card Nineteen", "Card Twenty", "Card Twenty-One", 
-        "Card Twenty-Two", "Card Twenty-Three", "Card Twenty-Four", "Card Twenty-Five",
-    ],
-    deck22: [
-        "Card One", "Card Two", "Card Three", "Card Four", "Card Five", "Card Six", "Card Seven", "Card Eight", 
-        "Card Nine", "Card Ten", "Card Eleven", "Card Twelve", "Card Thirteen", "Card Fourteen", "Card Fifteen", 
-        "Card Sixteen", "Card Seventeen", "Card Eighteen", "Card Nineteen", "Card Twenty", "Card Twenty-One", 
-        "Card Twenty-Two", "Card Twenty-Three", "Card Twenty-Four", "Card Twenty-Five", "Card Twenty-Six",
-        "Card Twenty-Seven", "Card Twenty-Eight", "Card Twenty-Nine", "Card Thirty", "Card Thirty-One",
-        "Card Thirty-Two", "Card Thirty-Three", "Card Thirty-Four", "Card Thirty-Five", "Card Thirty-Six",
-        "Card Thirty-Seven", "Card Thirty-Eight", "Card Thirty-Nine", "Card Fourty", "Card Fourty-One", "Card Fourty-Two",
-        "Card Fourty-Three", "Card Fourty-Four", "Card Fourty-Five",
-    ],
-    deck24: [
-        "Card One", "Card Two", "Card Three", "Card Four", "Card Five", "Card Six", "Card Seven", "Card Eight", 
-        "Card Nine", "Card Ten", "Card Eleven", "Card Twelve", "Card Thirteen",
-    ],
-    deck25: [
-        "Card One", "Card Two", "Card Three", "Card Four", "Card Five", "Card Six", "Card Seven", "Card Eight", 
-        "Card Nine", "Card Ten", "Card Eleven", "Card Twelve", "Card Thirteen", "Card Fourteen", "Card Fifteen", 
-        "Card Sixteen", "Card Seventeen", "Card Eighteen", "Card Nineteen", "Card Twenty", "Card Twenty-One", 
-        "Card Twenty-Two", "Card Twenty-Three", "Card Twenty-Four", "Card Twenty-Five", "Card Twenty-Six", "Card Twenty-Seven", 
-    ],
-    deck26: [
-        "Card One", "Card Two", "Card Three", "Card Four", "Card Five", "Card Six", "Card Seven",
-    ],
-    deck27: [
-        "Card One", "Card Two", "Card Three", "Card Four", "Card Five", "Card Six", "Card Seven", "Card Eight", 
-        "Card Nine", "Card Ten", "Card Eleven", "Card Twelve", "Card Thirteen", "Card Fourteen", "Card Fifteen", 
-        "Card Sixteen", "Card Seventeen", "Card Eighteen", "Card Nineteen", "Card Twenty", "Card Twenty-One", 
-        "Card Twenty-Two", "Card Twenty-Three", "Card Twenty-Four", "Card Twenty-Five", "Card Twenty-Six", "Card Twenty-Seven", 
-        "Card Twenty-Eight", "Card Twenty-Nine", "Card Thirty", "Card Thirty-One",
-        "Card Thirty-Two", "Card Thirty-Three", "Card Thirty-Four", "Card Thirty-Five",
-    ],
-};
-
 // =============================================================================
 // DECK REGISTRY
 // =============================================================================
@@ -143,66 +45,14 @@ const deckConfig = {};
 
 // =============================================================================
 // IMAGE PATH RESOLVER
+// All decks are custom (user-uploaded); images are looked up by stable card id.
 // =============================================================================
 
-function getCardImagePath(deckName, cardName) {
-    if (deckConfig[deckName] && deckConfig[deckName].custom) {
-        return deckConfig[deckName].cardMap[cardName] || null;
-    }
-    return null;
-}
-
-function getSuitSlug(cardName, suitSlugs) {
-    if (MAJOR_ARCANA.includes(cardName)) return suitSlugs.major;
-    if (CUPS.includes(cardName))         return suitSlugs.cups;
-    if (PENTACLES.includes(cardName))    return suitSlugs.pentacles;
-    if (SWORDS.includes(cardName))       return suitSlugs.swords;
-    if (WANDS.includes(cardName))        return suitSlugs.wands;
-    return null;
-}
-
-const deckThemes = {
-    deck1:  { theme: "sheep",    suitSlugs: { major: "major", cups: "water",     pentacles: "coins",     swords: "swords", wands: "wands" } },
-    deck2:  { theme: "mouse",    suitSlugs: { major: "major", cups: "cups",      pentacles: "pentacles", swords: "swords", wands: "wands" } },
-    deck3:  { theme: "pirate",   suitSlugs: { major: "major", cups: "cups",      pentacles: "pentacles", swords: "swords", wands: "wands" } },
-    deck4:  { theme: "medieval", suitSlugs: { major: "major", cups: "cups",     pentacles: "pentacles",      swords: "swords", wands: "wands" } },
-    deck5:  { theme: "writers",  suitSlugs: { major: "major", cups: "cups",      pentacles: "coins",     swords: "swords", wands: "wands" } },
-    deck6:  { theme: "romance",  suitSlugs: { major: "major", cups: "cups",      pentacles: "coins",     swords: "swords", wands: "wands" } },
-    deck7:  { theme: "mermaid",  suitSlugs: { major: "major", cups: "cups",      pentacles: "pentacles", swords: "swords", wands: "wands" } },
-    deck9:  { theme: "indie",    suitSlugs: { major: "major", cups: "cups",     pentacles: "coins",     swords: "swords", wands: "wands" } },
-    deck10: { theme: "lion",     suitSlugs: { major: "major", cups: "water",     pentacles: "coins",     swords: "swords", wands: "wands" } },
-    deck21: { theme: "spirit",   suitSlugs: { major: "major", cups: "water",     pentacles: "coins",     swords: "swords", wands: "wands" } },
-    deck23: { theme: "mushroom", suitSlugs: { major: "major", cups: "cups",     pentacles: "pentacles", swords: "swords", wands: "wands" } },
-};
-
-function standardImagePath(deckName, cardName) {
-    const cfg = deckThemes[deckName];
+function getCardImagePath(deckName, cardId) {
+    const cfg = deckConfig[deckName];
     if (!cfg) return null;
-    const index = CARD_INDEX[cardName];
-    const suit  = getSuitSlug(cardName, cfg.suitSlugs);
-    if (index === undefined || !suit) return null;
-    return `img/${deckName}/${index}${cfg.theme}-${suit}.png`;
+    return cfg.cardMap[cardId] || null;
 }
-
-function oracleNumericPath(deckName, cardName) {
-    const cards = ORACLE_CARD_LISTS[deckName];
-    if (!cards) return null;
-    const slot = cards.indexOf(cardName) + 1;
-    if (slot === 0) return null;
-    return `img/${deckName}/${slot}.png`;
-}
-
-function getCardImagePath(deckName, cardName) {
-    // Custom deck — use stored base64 image
-    if (deckConfig[deckName] && deckConfig[deckName].custom) {
-        return deckConfig[deckName].cardMap[cardName] || null;
-    }
-    if (ORACLE_CARD_LISTS[deckName]) return oracleNumericPath(deckName, cardName);
-    return standardImagePath(deckName, cardName);
-}
-
-
-
 
 // =============================================================================
 // LAYOUTS
@@ -747,14 +597,39 @@ async function getStoredCustomDecks() {
     return JSON.parse(localStorage.getItem(CUSTOM_DECKS_STORAGE_KEY) || '[]');
 }
 
+// Decks saved before cards had stable ids only have {name, dataUrl}. Assign
+// each an id in place so old decks stop relying on name-based identity —
+// this is what causes duplicated/ghost cards, since a display name is
+// user-editable and easy to collide (e.g. two cards renamed identically, or
+// a new slot's auto-generated name matching an already-used one).
+function migrateLegacyDeckCards(deckData) {
+    let changed = false;
+    deckData.cards = (deckData.cards || []).map(c => {
+        if (c.id) return c;
+        changed = true;
+        return { id: generateCardId(), name: c.name, dataUrl: c.dataUrl };
+    });
+    return changed;
+}
+
 async function loadCustomDecksFromStorage() {
     const saved = await getStoredCustomDecks();
     if (Array.isArray(saved) && saved.length > 0) {
+        const anyChanged = saved.map(migrateLegacyDeckCards).some(Boolean);
+        if (anyChanged) {
+            try { await saveCustomDecksToStorage(saved); }
+            catch (err) { console.warn('Unable to persist card-id migration:', err); }
+        }
         saved.forEach(deckData => registerCustomDeck(deckData));
         return;
     }
 
     const legacyDecks = JSON.parse(localStorage.getItem(CUSTOM_DECKS_STORAGE_KEY) || '[]');
+    const anyChanged = legacyDecks.map(migrateLegacyDeckCards).some(Boolean);
+    if (anyChanged) {
+        try { await saveCustomDecksToStorage(legacyDecks); }
+        catch (err) { console.warn('Unable to persist card-id migration:', err); }
+    }
     legacyDecks.forEach(deckData => registerCustomDeck(deckData));
 }
 
@@ -810,6 +685,14 @@ function getAutoCardName(idx, type) {
     return `Card ${idx + 1}`;
 }
 
+// Cards are identified internally by this id, not by their (freely editable,
+// collision-prone) display name — see generateCardId() usage below.
+let cardIdCounter = 0;
+function generateCardId() {
+    cardIdCounter += 1;
+    return `card_${Date.now()}_${cardIdCounter}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
 function readFileAsDataUrl(file, options = {}) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -848,8 +731,8 @@ function createCarousel(containerId, initialCards, deckType, onUpdate) {
     if (!container) return;
 
     let cards = initialCards.length > 0
-        ? [...initialCards, { name: getAutoCardName(initialCards.length, deckType), dataUrl: null }]
-        : [{ name: getAutoCardName(0, deckType), dataUrl: null }];
+        ? [...initialCards, { id: null, name: getAutoCardName(initialCards.length, deckType), dataUrl: null }]
+        : [{ id: null, name: getAutoCardName(0, deckType), dataUrl: null }];
 
     let offset      = 0;
     let pendingSlot = null;
@@ -866,6 +749,7 @@ function createCarousel(containerId, initialCards, deckType, onUpdate) {
         try {
             const dataUrl = await readFileAsDataUrl(file, { maxWidth: 560, maxHeight: 900, mimeType: 'image/jpeg', quality: 0.8 });
             cards[pendingSlot].dataUrl = dataUrl;
+            cards[pendingSlot].id      = cards[pendingSlot].id || generateCardId();
             ensureEmptySlot();
             render();
             onUpdate(getFilledCards());
@@ -882,7 +766,7 @@ function createCarousel(containerId, initialCards, deckType, onUpdate) {
 
     function ensureEmptySlot() {
         const filledCards = cards.filter(c => c.dataUrl !== null);
-        cards = [...filledCards, { name: getAutoCardName(filledCards.length, deckType), dataUrl: null }];
+        cards = [...filledCards, { id: null, name: getAutoCardName(filledCards.length, deckType), dataUrl: null }];
     }
 
     function triggerUpload(idx) {
@@ -892,8 +776,9 @@ function createCarousel(containerId, initialCards, deckType, onUpdate) {
 
     const api = {
         replaceCards(nextCards) {
-            cards = (nextCards.length > 0 ? nextCards : [{ name: getAutoCardName(0, deckType), dataUrl: null }])
+            cards = (nextCards.length > 0 ? nextCards : [{ id: null, name: getAutoCardName(0, deckType), dataUrl: null }])
                 .map((card, idx) => ({
+                    id: card.dataUrl ? (card.id || generateCardId()) : null,
                     name: card.name || getAutoCardName(idx, deckType),
                     dataUrl: card.dataUrl || null,
                 }));
@@ -1010,6 +895,7 @@ function createCarousel(containerId, initialCards, deckType, onUpdate) {
                     const reader = new FileReader();
                     reader.onload = (ev) => {
                         cards[realIdx].dataUrl = ev.target.result;
+                        cards[realIdx].id      = cards[realIdx].id || generateCardId();
                         ensureEmptySlot();
                         render();
                         onUpdate(getFilledCards());
@@ -1162,28 +1048,35 @@ async function saveCustomDeck() {
     closeCustomDeckBuilder();
 }
 
-function registerCustomDeck(deckData) {
-    if (deckConfig[deckData.id]) return;
+// Cards are keyed by their stable id (not their editable name) so a renamed
+// or accidentally-duplicated name can never make two cards collide into one
+// slot, or leave a card's id in the draw list with no matching image.
+function buildDeckConfigEntry(deckData) {
+    const validCards = deckData.cards.filter(c => c.id && c.dataUrl);
+    if (validCards.length !== deckData.cards.length) {
+        console.warn(`Deck "${deckData.name}" has ${deckData.cards.length - validCards.length} card(s) with missing image data — skipping them.`);
+    }
 
-    deckConfig[deckData.id] = {
-        cards:   deckData.cards.map(c => c.name),
+    return {
+        cards:   validCards.map(c => c.id),
         cover:   deckData.cover,
         type:    deckData.type,
         custom:  true,
-        cardMap: Object.fromEntries(deckData.cards.map(c => [c.name, c.dataUrl])),
+        cardMap:  Object.fromEntries(validCards.map(c => [c.id, c.dataUrl])),
+        nameMap:  Object.fromEntries(validCards.map(c => [c.id, c.name])),
     };
+}
+
+function registerCustomDeck(deckData) {
+    if (deckConfig[deckData.id]) return;
+
+    deckConfig[deckData.id] = buildDeckConfigEntry(deckData);
 
     addCustomDeckButton(deckData);
 }
 
 function updateRegisteredCustomDeck(deckData) {
-    deckConfig[deckData.id] = {
-        cards:   deckData.cards.map(c => c.name),
-        cover:   deckData.cover,
-        type:    deckData.type,
-        custom:  true,
-        cardMap: Object.fromEntries(deckData.cards.map(c => [c.name, c.dataUrl])),
-    };
+    deckConfig[deckData.id] = buildDeckConfigEntry(deckData);
 
     const btn = deckSelector.querySelector(`.deckButton[data-custom-id="${deckData.id}"]`);
     if (btn) {
@@ -1394,7 +1287,7 @@ function createDeck() {
         cardBack.style.backgroundImage = `url('${deckConfigEntry.cover}')`;
         cardBack.style.left = `calc(50% + ${index * spacing - deckWidth / 2}px)`;
         cardBack.style.zIndex = index;
-        cardBack.dataset.cardName = card;
+        cardBack.dataset.cardId = card;
     });
 
     existingChildren.slice(totalCards).forEach(child => child.remove());
@@ -1408,14 +1301,14 @@ function createDeck() {
 // DRAW CARD
 // =============================================================================
 
-function drawCard(cardElement, cardName, deckName) {
+function drawCard(cardElement, cardId, deckName) {
     cardElement.remove();
 
-    const index = currentDeck.indexOf(cardName);
+    const index = currentDeck.indexOf(cardId);
     if (index > -1) currentDeck.splice(index, 1);
 
     if (layoutIndex >= drawOrder.length) {
-        currentDeck.push(cardName);
+        currentDeck.push(cardId);
         createDeck();
         return;
     }
@@ -1424,7 +1317,7 @@ function drawCard(cardElement, cardName, deckName) {
     const isCircular = deckConfig[deckName].circular;
     cardDiv.className = "card" + (isCircular ? " circular" : "");
 
-    const imgSrc = getCardImagePath(deckName, cardName);
+    const imgSrc = getCardImagePath(deckName, cardId);
 
     if (imgSrc) {
         const safePath = imgSrc.replace(/ /g, "%20");
@@ -1432,7 +1325,13 @@ function drawCard(cardElement, cardName, deckName) {
         cardDiv.style.backgroundSize     = isCircular ? "160%" : "cover";
         cardDiv.style.backgroundPosition = "center";
     } else {
-        cardDiv.innerText = `${cardName} (${deckName})`;
+        // Should not happen — buildDeckConfigEntry() filters out cards with
+        // no image before they ever reach the draw list. Kept as a safe
+        // display-only fallback rather than letting a broken card vanish
+        // silently mid-reading.
+        const displayName = deckConfig[deckName]?.nameMap?.[cardId] || "Unknown Card";
+        cardDiv.classList.add("missingCardImage");
+        cardDiv.innerText = displayName;
     }
 
     cardDiv.style.position = "absolute";
