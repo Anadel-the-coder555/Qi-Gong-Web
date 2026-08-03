@@ -758,16 +758,18 @@ async function loadCustomDecksFromStorage() {
     legacyDecks.forEach(deckData => registerCustomDeck(deckData));
 }
 
-function openCustomDeckBuilder() {
+function resetCustomDeckForm() {
     customDeckCards    = [];
     customDeckCoverUrl = null;
     customDeckType     = 'tarot';
     customDeckTab      = 'tarot';
+    editingDeckId      = null;
 
     document.getElementById('customDeckName').value           = '';
     document.getElementById('customDeckCoverName').textContent = 'No file chosen';
     document.getElementById('customDeckCoverPreview').style.display = 'none';
     document.getElementById('customDeckSaveBtn').disabled      = true;
+    document.getElementById('customDeckSaveBtn').textContent   = 'Create Deck';
 
     document.querySelectorAll('.customDeckTypeBtn').forEach(b => {
         b.classList.toggle('active', b.dataset.type === 'tarot');
@@ -780,9 +782,17 @@ function openCustomDeckBuilder() {
         customDeckCards = filledCards;
         checkCustomDeckReady();
     });
+}
 
-    switchDeckModalTab('create', document.querySelector('.customDeckTabSwitch'));
+function openCustomDeckBuilder() {
+    resetCustomDeckForm();
+    switchDeckModalTab('create', document.querySelector('.customDeckTabSwitch[data-tab="create"]'));
     document.getElementById('customDeckOverlay').classList.add('open');
+}
+
+function startNewDeck() {
+    resetCustomDeckForm();
+    switchDeckModalTab('create', document.querySelector('.customDeckTabSwitch[data-tab="create"]'));
 }
 
 function closeCustomDeckBuilder() {
@@ -1067,10 +1077,13 @@ async function handleBulkCardUpload(event) {
 }
 
 function switchDeckModalTab(tab, btn) {
-    if (btn) {
-        document.querySelectorAll('.customDeckTabSwitch').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    }
+    document.querySelectorAll('.customDeckTabSwitch').forEach(b => b.classList.remove('active'));
+    (btn || document.querySelector(`.customDeckTabSwitch[data-tab="${tab}"]`))?.classList.add('active');
+
+    document.getElementById('customDeckViewCreate').style.display   = tab === 'create' ? 'flex' : 'none';
+    document.getElementById('customDeckViewMyDecks').style.display  = tab === 'manage' ? 'flex' : 'none';
+
+    if (tab === 'manage') renderMyDecksList();
 }
 
 function setCustomDeckType(btn) {
@@ -1117,7 +1130,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function saveCustomDeck() {
     const name = document.getElementById('customDeckName').value.trim();
-    const id   = 'customdeck_' + Date.now();
+    const id   = editingDeckId || ('customdeck_' + Date.now());
+    const isEdit = !!editingDeckId;
 
     const deckData = {
         id,
@@ -1130,7 +1144,8 @@ async function saveCustomDeck() {
 
     try {
         const existing = await getStoredCustomDecks();
-        existing.push(deckData);
+        const idx = existing.findIndex(d => d.id === id);
+        if (idx > -1) existing[idx] = deckData; else existing.push(deckData);
         await saveCustomDecksToStorage(existing);
     } catch (err) {
         console.error('Unable to save custom deck:', err);
@@ -1138,7 +1153,12 @@ async function saveCustomDeck() {
         return;
     }
 
-    registerCustomDeck(deckData);
+    if (isEdit) {
+        updateRegisteredCustomDeck(deckData);
+    } else {
+        registerCustomDeck(deckData);
+    }
+    editingDeckId = null;
     closeCustomDeckBuilder();
 }
 
@@ -1154,6 +1174,144 @@ function registerCustomDeck(deckData) {
     };
 
     addCustomDeckButton(deckData);
+}
+
+function updateRegisteredCustomDeck(deckData) {
+    deckConfig[deckData.id] = {
+        cards:   deckData.cards.map(c => c.name),
+        cover:   deckData.cover,
+        type:    deckData.type,
+        custom:  true,
+        cardMap: Object.fromEntries(deckData.cards.map(c => [c.name, c.dataUrl])),
+    };
+
+    const btn = deckSelector.querySelector(`.deckButton[data-custom-id="${deckData.id}"]`);
+    if (btn) {
+        btn.title = deckData.name;
+        btn.dataset.type = deckData.type;
+        btn.style.backgroundImage = `url('${deckData.cover}')`;
+        btn.style.display = deckData.type === activeDeckType ? 'flex' : 'none';
+    }
+
+    if (currentDeckName === deckData.id) {
+        currentDeck = [...deckConfig[deckData.id].cards];
+        createDeck();
+    }
+}
+
+// =============================================================================
+// MANAGE CUSTOM DECKS — "My Decks" tab
+// =============================================================================
+
+async function renderMyDecksList() {
+    const grid  = document.getElementById('myDecksGrid');
+    const empty = document.getElementById('myDecksEmpty');
+    const count = document.getElementById('myDecksCount');
+    if (!grid) return;
+
+    const decks = await getStoredCustomDecks();
+    grid.innerHTML = '';
+
+    count.textContent = `${decks.length} deck${decks.length !== 1 ? 's' : ''}`;
+
+    if (!decks.length) {
+        empty.style.display = 'block';
+        grid.style.display  = 'none';
+        return;
+    }
+    empty.style.display = 'none';
+    grid.style.display  = 'grid';
+
+    decks.forEach(deckData => {
+        const item = document.createElement('div');
+        item.className = 'myDeckItem';
+
+        const cover = document.createElement('div');
+        cover.className = 'myDeckCover';
+        if (deckData.cover) cover.style.backgroundImage = `url('${deckData.cover}')`;
+        item.appendChild(cover);
+
+        const info = document.createElement('div');
+        info.className = 'myDeckInfo';
+
+        const nameEl = document.createElement('div');
+        nameEl.className = 'myDeckName';
+        nameEl.textContent = deckData.name;
+
+        const metaEl = document.createElement('div');
+        metaEl.className = 'myDeckMeta';
+        metaEl.textContent = `${deckData.type === 'oracle' ? 'Oracle' : 'Tarot'} tab · ${deckData.cards.length} card${deckData.cards.length !== 1 ? 's' : ''}`;
+
+        info.appendChild(nameEl);
+        info.appendChild(metaEl);
+        item.appendChild(info);
+
+        const actions = document.createElement('div');
+        actions.className = 'myDeckActions';
+
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit';
+        editBtn.onclick = () => startEditDeck(deckData.id);
+
+        const delBtn = document.createElement('button');
+        delBtn.textContent = 'Delete';
+        delBtn.className   = 'myDeckDeleteBtn';
+        delBtn.onclick = () => confirmDeleteCustomDeck(deckData.id);
+
+        actions.appendChild(editBtn);
+        actions.appendChild(delBtn);
+        item.appendChild(actions);
+
+        grid.appendChild(item);
+    });
+}
+
+async function startEditDeck(id) {
+    const decks    = await getStoredCustomDecks();
+    const deckData = decks.find(d => d.id === id);
+    if (!deckData) return;
+
+    editingDeckId       = id;
+    customDeckType      = deckData.deckType;
+    customDeckTab       = deckData.type;
+    customDeckCoverUrl  = deckData.cover;
+    customDeckCards     = [...deckData.cards];
+
+    document.getElementById('customDeckName').value = deckData.name;
+    document.getElementById('customDeckCoverName').textContent = 'Current cover image';
+    const preview = document.getElementById('customDeckCoverPreview');
+    preview.src = deckData.cover;
+    preview.style.display = 'block';
+
+    document.querySelectorAll('.customDeckTypeBtn').forEach(b => {
+        b.classList.toggle('active', b.dataset.type === customDeckType);
+    });
+    document.querySelectorAll('.customDeckTabBtn').forEach(b => {
+        b.classList.toggle('active', b.dataset.tab === customDeckTab);
+    });
+
+    activeDeckCarouselApi = createCarousel('createCarousel', deckData.cards, customDeckType, (filledCards) => {
+        customDeckCards = filledCards;
+        checkCustomDeckReady();
+    });
+
+    document.getElementById('customDeckSaveBtn').textContent = 'Save Changes';
+    checkCustomDeckReady();
+
+    switchDeckModalTab('create', document.querySelector('.customDeckTabSwitch[data-tab="create"]'));
+}
+
+async function confirmDeleteCustomDeck(id) {
+    if (!confirm('Delete this custom deck? This cannot be undone.')) return;
+
+    const btnEl = deckSelector.querySelector(`.deckButton[data-custom-id="${id}"]`);
+    await deleteCustomDeck(id, btnEl);
+
+    if (editingDeckId === id) {
+        resetCustomDeckForm();
+    }
+
+    renderMyDecksList();
 }
 
 function addCustomDeckButton(deckData) {

@@ -1449,7 +1449,7 @@ body.theme-light #settingsBar label {
     padding: 0;
 }
 
-#customDeckFooter {
+#customDeckFooter, .customDeckFooter {
     display: flex;
     justify-content: flex-end;
     gap: 0.5rem;
@@ -1458,7 +1458,7 @@ body.theme-light #settingsBar label {
     border-top: 1px solid rgba(255,255,255,0.2);
 }
 
-#customDeckFooter button {
+#customDeckFooter button, .customDeckFooter button {
     padding: 0.45rem 1rem;
     border-radius: 6px;
     cursor: pointer;
@@ -1471,7 +1471,7 @@ body.theme-light #settingsBar label {
     transition: all 0.2s;
 }
 
-#customDeckFooter button:hover {
+#customDeckFooter button:hover, .customDeckFooter button:hover {
     background: rgba(255,255,255,0.15);
 }
 
@@ -1689,3 +1689,139 @@ body.theme-light #settingsBar label {
 
 .deckCardGrid .card-name-input::placeholder { color: rgba(255,255,255,0.4); }
 .deckCardGrid .card-name-input:focus { border-color: rgba(255,255,255,0.7); }
+
+/* =============================================================================
+   MY DECKS — manage/edit/delete uploaded decks
+============================================================================= */
+
+#myDecksBody {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.25rem;
+    overflow: hidden;
+}
+
+#myDecksToolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#myDecksCount {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    font-family: 'Crimson Roman', serif;
+}
+
+#myDecksNewBtn {
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    font-family: 'Crimson Roman', serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#myDecksNewBtn:hover {
+    background: rgba(255,255,255,0.22);
+}
+
+#myDecksEmpty {
+    color: rgba(255,255,255,0.7);
+    font-family: 'Crimson Roman', serif;
+    font-size: 14px;
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+#myDecksGrid {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    padding: 4px 4px 1rem;
+}
+
+.myDeckItem {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.myDeckCover {
+    width: 100%;
+    aspect-ratio: 5 / 8;
+    border-radius: 8px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgba(255,255,255,0.12);
+}
+
+.myDeckInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.myDeckName {
+    font-family: 'Crimson Roman', serif;
+    font-size: 14px;
+    color: #fff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.myDeckMeta {
+    font-family: 'Crimson Roman', serif;
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.myDeckActions {
+    display: flex;
+    gap: 6px;
+}
+
+.myDeckActions button {
+    flex: 1;
+    padding: 6px 0;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-family: 'Crimson Roman', serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.myDeckActions button:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+.myDeckActions button.myDeckDeleteBtn {
+    background: rgba(196,68,68,0.75);
+    border-color: rgba(255,255,255,0.4);
+}
+
+.myDeckActions button.myDeckDeleteBtn:hover {
+    background: rgba(196,68,68,0.95);
+}
