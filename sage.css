@@ -170,6 +170,10 @@ body {
     width: 280%;
     height: 280%;
     object-fit: contain;
+    /* Purely decorative overflow — without this, its oversized bounding
+       box intercepts clicks on drawer content (e.g. deck buttons) sitting
+       underneath it, even though most of that box is visually transparent. */
+    pointer-events: none;
 }
 
 /* deck buttons in side panel */
@@ -260,6 +264,8 @@ body {
     position: absolute;
     z-index: 10;
     box-sizing: border-box;
+    pointer-events: auto;
+    cursor: pointer;
 }
 
 .card.circular {
@@ -276,12 +282,6 @@ body {
     justify-content: center;
     font-family: 'Crimson Roman', serif;
     font-size: 13px;
-}
-
-/* meaning card — appears directly beneath its move card */
-.card.meaningCard {
-    border: 2px solid rgba(255,255,255,0.6);
-    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
 }
 
 .deckCard.circular {
@@ -1796,7 +1796,7 @@ body.theme-light #settingsBar label {
     padding: 3rem 1rem;
 }
 
-#myDecksGrid {
+#myDecksGrid, #cardDescDecksGrid {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
@@ -1878,4 +1878,294 @@ body.theme-light #settingsBar label {
 
 .myDeckActions button.myDeckDeleteBtn:hover {
     background: rgba(196,68,68,0.95);
+}
+
+/* =============================================================================
+   CARD DESCRIPTIONS MODAL (Settings)
+============================================================================= */
+
+#cardDescriptionsOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+#cardDescriptionsOverlay.open {
+    display: flex;
+}
+
+#cardDescriptionsModal {
+    background: #a9714f;
+    border: 1px solid #fefefe;
+    border-radius: 12px;
+    padding: 24px;
+    width: 80vw;
+    max-width: 700px;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+#cardDescDeckPicker {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    gap: 14px;
+}
+
+#cardDescDeckPicker h3,
+#cardDescEditorHeader h3 {
+    text-align: center;
+    font-family: 'Crimson Roman', serif;
+    color: #fcfcfc;
+    margin: 0;
+}
+
+.cardDescHint {
+    text-align: center;
+    font-family: 'Crimson Roman', serif;
+    font-size: 13px;
+    color: rgba(255,255,255,0.75);
+    margin: 0;
+}
+
+#cardDescDecksEmpty {
+    color: rgba(255,255,255,0.7);
+    font-family: 'Crimson Roman', serif;
+    font-size: 14px;
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+#cardDescPickerClose {
+    align-self: center;
+    padding: 8px 24px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    background: #b89b83;
+    color: white;
+}
+
+#cardDescPickerClose:hover {
+    background: #6b4226;
+}
+
+#cardDescEditor {
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    gap: 14px;
+}
+
+#cardDescEditorHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#cardDescEditorHeader h3 {
+    flex: 1;
+}
+
+#cardDescBack {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #c9a084;
+    border: 1px solid #8a5c3f;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+#cardDescBack:hover {
+    background: #6b4226;
+}
+
+#cardDescList {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 4px;
+}
+
+.cardDescRow {
+    display: flex;
+    gap: 12px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.cardDescThumb {
+    width: 70px;
+    height: 112px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+.cardDescFields {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+}
+
+.cardDescName {
+    font-family: 'Crimson Roman', serif;
+    font-size: 13px;
+    color: #fff;
+}
+
+.cardDescTextarea {
+    width: 100%;
+    min-height: 70px;
+    resize: vertical;
+    box-sizing: border-box;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 6px;
+    padding: 8px 10px;
+    color: #fff;
+    font-family: 'Crimson Roman', serif;
+    font-size: 13px;
+}
+
+.cardDescTextarea::placeholder {
+    color: rgba(255,255,255,0.45);
+}
+
+.cardDescTextarea:focus {
+    outline: none;
+    border-color: rgba(255,255,255,0.6);
+}
+
+#cardDescFooter {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+#cardDescFooter button {
+    padding: 8px 22px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'Crimson Roman', serif;
+}
+
+#cardDescCancel {
+    background: #b89b83;
+    color: white;
+}
+#cardDescCancel:hover { background: #6b4226; }
+
+#cardDescSave {
+    background: #c9a084;
+    color: white;
+}
+#cardDescSave:hover { background: #6b4226; }
+
+/* =============================================================================
+   CARD DETAIL POPUP (click a card during a reading)
+============================================================================= */
+
+#cardDetailOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+#cardDetailOverlay.open {
+    display: flex;
+}
+
+#cardDetailModal {
+    position: relative;
+    background: #a9714f;
+    border: 1px solid #fefefe;
+    border-radius: 12px;
+    padding: 28px;
+    width: 90vw;
+    max-width: 420px;
+    max-height: 85vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    box-sizing: border-box;
+}
+
+#cardDetailClose {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#cardDetailClose:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+#cardDetailName {
+    font-family: 'Crimson Roman', serif;
+    color: #fcfcfc;
+    text-align: center;
+    margin: 0;
+    letter-spacing: 0.04em;
+}
+
+#cardDetailImage {
+    width: 160px;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+}
+
+#cardDetailMeaningImage {
+    width: 120px;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+}
+
+#cardDetailDescription {
+    font-family: 'Crimson Roman', serif;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #fff;
+    text-align: center;
+    margin: 0;
+}
+
+#cardDetailDescription.cardDetailDescriptionEmpty {
+    font-style: italic;
+    color: rgba(255,255,255,0.65);
 }

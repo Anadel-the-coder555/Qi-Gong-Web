@@ -21,6 +21,12 @@ function getMeaningImagePath(deckName, cardId) {
     return cfg.meaningMap?.[cardId] || null;
 }
 
+function getCardDescription(deckName, cardId) {
+    const cfg = deckConfig[deckName];
+    if (!cfg) return null;
+    return cfg.descriptionMap?.[cardId] || null;
+}
+
 // =============================================================================
 // LAYOUTS
 // Add new layouts here — positions and draw order only.
@@ -366,6 +372,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
     audioOverlay.addEventListener("click", (e) => {
         if (e.target === audioOverlay) audioOverlay.classList.remove("open");
+    });
+
+    // =============================================================================
+    // CARD DESCRIPTIONS MODAL + CARD DETAIL POPUP
+    // =============================================================================
+
+    const cardDescOverlay = document.getElementById("cardDescriptionsOverlay");
+
+    document.getElementById("openCardDescriptions").addEventListener("click", openCardDescriptions);
+    document.getElementById("cardDescPickerClose").addEventListener("click", closeCardDescriptions);
+    document.getElementById("cardDescBack").addEventListener("click", closeCardDescEditor);
+    document.getElementById("cardDescCancel").addEventListener("click", closeCardDescEditor);
+    document.getElementById("cardDescSave").addEventListener("click", saveCardDescriptions);
+
+    cardDescOverlay.addEventListener("click", (e) => {
+        if (e.target === cardDescOverlay) closeCardDescriptions();
+    });
+
+    const cardDetailOverlay = document.getElementById("cardDetailOverlay");
+
+    document.getElementById("cardDetailClose").addEventListener("click", closeCardDetailPopup);
+
+    cardDetailOverlay.addEventListener("click", (e) => {
+        if (e.target === cardDetailOverlay) closeCardDetailPopup();
     });
 
 }); // end DOMContentLoaded
@@ -1098,6 +1128,7 @@ function buildDeckConfigEntry(deckData) {
         cardMap:    Object.fromEntries(validCards.map(c => [c.id, c.dataUrl])),
         meaningMap: Object.fromEntries(validCards.filter(c => c.meaningDataUrl).map(c => [c.id, c.meaningDataUrl])),
         nameMap:    Object.fromEntries(validCards.map(c => [c.id, c.name])),
+        descriptionMap: Object.fromEntries(validCards.filter(c => c.description).map(c => [c.id, c.description])),
     };
 }
 
@@ -1239,6 +1270,198 @@ async function confirmDeleteCustomDeck(id) {
     renderMyDecksList();
 }
 
+// =============================================================================
+// CARD DETAIL POPUP — shown when a drawn card is clicked
+// =============================================================================
+
+function openCardDetailPopup(deckName, cardId) {
+    const cfg = deckConfig[deckName];
+    if (!cfg) return;
+
+    document.getElementById('cardDetailName').textContent = cfg.nameMap?.[cardId] || 'Card';
+
+    const image = document.getElementById('cardDetailImage');
+    image.src = getCardImagePath(deckName, cardId) || '';
+
+    const meaningImage = document.getElementById('cardDetailMeaningImage');
+    const meaningSrc = getMeaningImagePath(deckName, cardId);
+    if (meaningSrc) {
+        meaningImage.src = meaningSrc;
+        meaningImage.style.display = 'block';
+    } else {
+        meaningImage.style.display = 'none';
+    }
+
+    const description = getCardDescription(deckName, cardId);
+    const descEl = document.getElementById('cardDetailDescription');
+    if (description) {
+        descEl.textContent = description;
+        descEl.classList.remove('cardDetailDescriptionEmpty');
+    } else {
+        descEl.textContent = 'No instructions yet — add one in Settings → Card Descriptions.';
+        descEl.classList.add('cardDetailDescriptionEmpty');
+    }
+
+    document.getElementById('cardDetailOverlay').classList.add('open');
+}
+
+function closeCardDetailPopup() {
+    document.getElementById('cardDetailOverlay').classList.remove('open');
+}
+
+// =============================================================================
+// CARD DESCRIPTIONS EDITOR (Settings) — write per-card move instructions
+// =============================================================================
+
+let cardDescEditingDeckId = null;
+
+async function openCardDescriptions() {
+    cardDescEditingDeckId = null;
+    document.getElementById('cardDescEditor').style.display = 'none';
+    document.getElementById('cardDescDeckPicker').style.display = 'flex';
+    await renderCardDescDecksGrid();
+    document.getElementById('cardDescriptionsOverlay').classList.add('open');
+}
+
+function closeCardDescriptions() {
+    document.getElementById('cardDescriptionsOverlay').classList.remove('open');
+}
+
+async function renderCardDescDecksGrid() {
+    const grid  = document.getElementById('cardDescDecksGrid');
+    const empty = document.getElementById('cardDescDecksEmpty');
+
+    const decks = await getStoredCustomDecks();
+    grid.innerHTML = '';
+
+    if (!decks.length) {
+        empty.style.display = 'block';
+        grid.style.display  = 'none';
+        return;
+    }
+    empty.style.display = 'none';
+    grid.style.display  = 'grid';
+
+    decks.forEach(deckData => {
+        const item = document.createElement('div');
+        item.className = 'myDeckItem';
+
+        const cover = document.createElement('div');
+        cover.className = 'myDeckCover';
+        if (deckData.cover) cover.style.backgroundImage = `url('${deckData.cover}')`;
+        item.appendChild(cover);
+
+        const info = document.createElement('div');
+        info.className = 'myDeckInfo';
+
+        const nameEl = document.createElement('div');
+        nameEl.className = 'myDeckName';
+        nameEl.textContent = deckData.name;
+
+        const metaEl = document.createElement('div');
+        metaEl.className = 'myDeckMeta';
+        metaEl.textContent = `${deckData.cards.length} card${deckData.cards.length !== 1 ? 's' : ''}`;
+
+        info.appendChild(nameEl);
+        info.appendChild(metaEl);
+        item.appendChild(info);
+
+        const actions = document.createElement('div');
+        actions.className = 'myDeckActions';
+
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit Descriptions';
+        editBtn.onclick = () => openCardDescEditorForDeck(deckData.id);
+
+        actions.appendChild(editBtn);
+        item.appendChild(actions);
+
+        grid.appendChild(item);
+    });
+}
+
+async function openCardDescEditorForDeck(id) {
+    const decks    = await getStoredCustomDecks();
+    const deckData = decks.find(d => d.id === id);
+    if (!deckData) return;
+
+    cardDescEditingDeckId = id;
+    document.getElementById('cardDescDeckName').textContent = deckData.name;
+
+    const list = document.getElementById('cardDescList');
+    list.innerHTML = '';
+
+    deckData.cards.filter(c => c.id && c.dataUrl).forEach(card => {
+        const row = document.createElement('div');
+        row.className = 'cardDescRow';
+        row.dataset.cardId = card.id;
+
+        const thumb = document.createElement('img');
+        thumb.className = 'cardDescThumb';
+        thumb.src = card.dataUrl;
+        row.appendChild(thumb);
+
+        const fields = document.createElement('div');
+        fields.className = 'cardDescFields';
+
+        const nameEl = document.createElement('div');
+        nameEl.className = 'cardDescName';
+        nameEl.textContent = card.name;
+        fields.appendChild(nameEl);
+
+        const textarea = document.createElement('textarea');
+        textarea.className = 'cardDescTextarea';
+        textarea.placeholder = 'How do you do this move?';
+        textarea.value = card.description || '';
+        fields.appendChild(textarea);
+
+        row.appendChild(fields);
+        list.appendChild(row);
+    });
+
+    document.getElementById('cardDescDeckPicker').style.display = 'none';
+    document.getElementById('cardDescEditor').style.display = 'flex';
+}
+
+function closeCardDescEditor() {
+    cardDescEditingDeckId = null;
+    document.getElementById('cardDescEditor').style.display = 'none';
+    document.getElementById('cardDescDeckPicker').style.display = 'flex';
+}
+
+async function saveCardDescriptions() {
+    if (!cardDescEditingDeckId) return;
+
+    const descriptions = {};
+    document.querySelectorAll('#cardDescList .cardDescRow').forEach(row => {
+        const textarea = row.querySelector('.cardDescTextarea');
+        descriptions[row.dataset.cardId] = textarea.value.trim();
+    });
+
+    const decks    = await getStoredCustomDecks();
+    const deckData = decks.find(d => d.id === cardDescEditingDeckId);
+    if (!deckData) return;
+
+    deckData.cards.forEach(card => {
+        if (card.id && Object.prototype.hasOwnProperty.call(descriptions, card.id)) {
+            card.description = descriptions[card.id];
+        }
+    });
+
+    await saveCustomDecksToStorage(decks);
+
+    // Patch the live config in place rather than calling
+    // updateRegisteredCustomDeck() — that would reset layoutIndex and clear
+    // the table, wiping out any reading in progress just because someone
+    // edited descriptions in Settings at the same time.
+    if (deckConfig[cardDescEditingDeckId]) {
+        deckConfig[cardDescEditingDeckId].descriptionMap =
+            Object.fromEntries(deckData.cards.filter(c => c.id && c.description).map(c => [c.id, c.description]));
+    }
+
+    closeCardDescEditor();
+}
+
 function addCustomDeckButton(deckData) {
     const btn = document.createElement('div');
     btn.className        = 'deckButton';
@@ -1371,8 +1594,6 @@ function buildCardFace({ imgSrc, fallbackText, isCircular, pos, size, rotate, ex
     return cardDiv;
 }
 
-const MEANING_CARD_GAP_PX = 14;
-
 function drawCard(cardElement, cardId, deckName) {
     cardElement.remove();
 
@@ -1402,27 +1623,8 @@ function drawCard(cardElement, cardId, deckName) {
         size,
         rotate,
     });
+    cardDiv.addEventListener("click", () => openCardDetailPopup(deckName, cardId));
     table.appendChild(cardDiv);
-
-    // The meaning card is optional per-card — only shown when the deck
-    // creator uploaded a meaning image for this card — and is placed
-    // directly beneath the move card, aligned to the same column/rotation.
-    const meaningSrc = getMeaningImagePath(deckName, cardId);
-    if (meaningSrc) {
-        const cardHeightPx = isCircular ? 120 : parseFloat(size.height);
-        const meaningPos = { x: pos.x, y: `calc(${pos.y} + ${cardHeightPx}px + ${MEANING_CARD_GAP_PX}px)` };
-
-        const meaningDiv = buildCardFace({
-            imgSrc: meaningSrc,
-            fallbackText: "",
-            isCircular,
-            pos: meaningPos,
-            size,
-            rotate,
-            extraClass: "meaningCard",
-        });
-        table.appendChild(meaningDiv);
-    }
 }
 
 function refreshReading() {

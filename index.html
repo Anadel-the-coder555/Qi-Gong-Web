@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <title>Qi Gong</title>
-<link rel="stylesheet" href="sage.css?v=5">
+<link rel="stylesheet" href="sage.css?v=6">
 </head>
 
 <body>
@@ -56,6 +57,10 @@
       <hr class="settingsDivider">
 
       <button id="openCustomDeckBuilder" onclick="openCustomDeckBuilder()">Create Custom Deck</button>
+
+      <hr class="settingsDivider">
+
+      <button id="openCardDescriptions">Card Descriptions</button>
     </div>
 
   </div>
@@ -168,6 +173,44 @@
     <audio id="audioPlayer"></audio>
 
     <button id="audioLibraryCancel">Close</button>
+  </div>
+</div>
+
+<!-- Card Descriptions Modal (Settings) -->
+<div id="cardDescriptionsOverlay">
+  <div id="cardDescriptionsModal">
+
+    <div id="cardDescDeckPicker">
+      <h3>Card Descriptions</h3>
+      <p class="cardDescHint">Choose a deck, then write how to do each move. Tap a card during a reading to see it.</p>
+      <div id="cardDescDecksEmpty" style="display:none;">No custom decks yet. Create one first.</div>
+      <div id="cardDescDecksGrid"></div>
+      <button id="cardDescPickerClose">Close</button>
+    </div>
+
+    <div id="cardDescEditor" style="display:none;">
+      <div id="cardDescEditorHeader">
+        <button id="cardDescBack" title="Back">&#10094;</button>
+        <h3 id="cardDescDeckName">Deck</h3>
+      </div>
+      <div id="cardDescList"></div>
+      <div id="cardDescFooter">
+        <button id="cardDescCancel">Cancel</button>
+        <button id="cardDescSave">Save</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Card Detail Popup (click a card during a reading) -->
+<div id="cardDetailOverlay">
+  <div id="cardDetailModal">
+    <button id="cardDetailClose" title="Close">✕</button>
+    <h3 id="cardDetailName"></h3>
+    <img id="cardDetailImage" alt="">
+    <img id="cardDetailMeaningImage" alt="">
+    <p id="cardDetailDescription"></p>
   </div>
 </div>
 
