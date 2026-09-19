@@ -2,28 +2,13 @@
 <html>
 <head>
 <title>Qi Gong</title>
-<link rel="stylesheet" href="sage.css?v=4">
+<link rel="stylesheet" href="sage.css?v=5">
 </head>
 
 <body>
 
-<div id="deckSelector">
-    <h3>Choose Deck</h3>
-
-    <!-- Qi Gong / Tai Chi slide toggle -->
-    <div id="deckTypeToggle">
-        <button class="deckTypeBtn active" data-type="qigong">Qi Gong</button>
-        <button class="deckTypeBtn" data-type="taichi">Tai Chi</button>
-    </div>
-
-    <!-- Deck buttons injected here by JS, filtered by data-type -->
-
-</div>
-
-
 <div id="mainContent">
   <div id="buttonBar">
-    <div id="toggleDeckBar">&#10095;</div>
     <button onclick="shuffleDeck()">Shuffle Current Deck</button>
     <button id="refreshBtn" onclick="refreshReading()">Refresh Reading</button>
   </div>
@@ -32,32 +17,53 @@
   <div id="deck"></div>
 </div>
 
-<!-- Settings Bar -->
-<div id="settingsBar">
-  <h3>Settings</h3>
+<!-- Sliding drawer: opened by the lotus. Choose Deck shows first, slide right for Settings -->
+<div id="sideDrawer">
+  <div id="drawerTrack">
 
-  <label for="bgUpload">&#8679; Choose image file </label>
-  <input type="file" id="bgUpload" accept="image/*">
+    <div id="deckSelector" class="drawerPage">
+        <h3>Choose Deck</h3>
 
-  <button id="openBgPicker">Choose Background</button>
+        <!-- Qi Gong / Tai Chi slide toggle -->
+        <div id="deckTypeToggle">
+            <button class="deckTypeBtn active" data-type="qigong">Qi Gong</button>
+            <button class="deckTypeBtn" data-type="taichi">Tai Chi</button>
+        </div>
 
-  <hr class="settingsDivider">
+        <!-- Deck buttons injected here by JS, filtered by data-type -->
 
-  <button id="openLayoutPicker">Choose Layout</button>
+        <div id="slideToSettings" class="drawerNavArrow" title="Settings">&#10095;</div>
+    </div>
 
-  <hr class="settingsDivider">
+    <div id="settingsBar" class="drawerPage">
+      <div id="slideToDeck" class="drawerNavArrow" title="Choose Deck">&#10094;</div>
 
-  <button id="openAudioLibrary">Audio Library</button>
+      <h3>Settings</h3>
 
-  <hr class="settingsDivider">
+      <label for="bgUpload">&#8679; Choose image file </label>
+      <input type="file" id="bgUpload" accept="image/*">
 
-<button id="openCustomDeckBuilder" onclick="openCustomDeckBuilder()">Create Custom Deck</button>
+      <button id="openBgPicker">Choose Background</button>
 
+      <hr class="settingsDivider">
+
+      <button id="openLayoutPicker">Choose Layout</button>
+
+      <hr class="settingsDivider">
+
+      <button id="openAudioLibrary">Audio Library</button>
+
+      <hr class="settingsDivider">
+
+      <button id="openCustomDeckBuilder" onclick="openCustomDeckBuilder()">Create Custom Deck</button>
+    </div>
+
+  </div>
 </div>
 
-<!-- Settings Toggle Button -->
+<!-- Drawer Toggle Button -->
 <div id="toggleSettingsBar">
-  <img src="img/tarotlogo.png" alt="settings">
+  <img src="img/tarotlogo.png" alt="menu">
 </div>
 
 <!-- Layout Picker Modal -->

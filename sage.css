@@ -17,14 +17,10 @@ body {
   src: url('fonts/CrimsonRoman.otf') format('opentype');
 }
 
-/* side panel for deck selection */
+/* deck selection page, inside the sliding drawer */
 #deckSelector {
-    width:200px;
-    padding:20px;
-    box-sizing:border-box;
-    max-height: 90vh;       
-    overflow-y: overlay;       
-    transition: margin-left 0.3s ease; 
+    padding: 215px 20px 20px;
+    box-sizing: border-box;
 }
 
 #deckSelector h3 {
@@ -35,10 +31,6 @@ body {
     color: rgba(255, 255, 255, 0.7);
     margin-top: 0;
     margin-bottom: 14px;
-}
-
-#deckSelector.collapsed {
-    margin-left: -200px;
 }
 
 /* ---- Qi Gong / Tai Chi toggle tabs ---- */
@@ -79,39 +71,83 @@ body {
     color: rgba(255, 255, 255, 0.8);
 }
 
-/* arrow toggle button */
-#toggleDeckBar {
+/* =============================================================================
+   SLIDING DRAWER — Choose Deck (default page) + Settings (slide right)
+============================================================================= */
+
+#sideDrawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 240px;
+    height: 100vh;
+    overflow: hidden;
+    background: rgba(169, 113, 79, 0.55);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: -6px 0 32px rgba(0,0,0,0.55);
+    border-left: 1px solid rgba(201, 153, 124, 0.18);
+    z-index: 1000;
+    transition: margin-right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#sideDrawer.collapsed {
+    margin-right: -240px;
+}
+
+#drawerTrack {
+    display: flex;
+    width: 200%;
+    height: 100%;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#drawerTrack.showSettings {
+    transform: translateX(-50%);
+}
+
+.drawerPage {
+    width: 50%;
+    height: 100%;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    overflow-y: auto;
     position: relative;
-    left: -10px;
-    top: 20px;
-    transform: translateY(-50%) rotate(0deg);
-    width: 40px;
-    height: 40px;
+    color: white;
+    font-family: 'Crimson Roman', serif;
+}
+
+/* chevron that slides the drawer between its two pages */
+.drawerNavArrow {
+    position: absolute;
+    top: 24px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
     background: #c9a084;
+    border: 1px solid #8a5c3f;
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    border-radius: 50%;
-    font-size: 20px;
-    z-index: 1000;
-    transition: all 0.3s ease;
-    border: 1px solid #8a5c3f;
-    box-shadow: -2px 2px 8px rgba(0,0,0,0.5);
+    font-size: 16px;
     font-weight: bold;
-    transition: all 0.3s ease;
+    box-shadow: -2px 2px 8px rgba(0,0,0,0.5);
+    transition: background 0.2s ease;
+    z-index: 5;
 }
 
-#toggleDeckBar:hover {
+.drawerNavArrow:hover {
     background: #6b4226;
-    box-shadow: -2px 2px 12px rgba(0,0,0,0.7);
 }
-#toggleDeckBar.collapsed {
-    left: -20px;
-    top: 15%;
-    border-radius: 50%;
-    transform: rotate(180deg);
+
+#slideToSettings {
+    right: 16px;
+}
+
+#slideToDeck {
+    left: 16px;
 }
 
 /* settings toggle button */
@@ -179,10 +215,9 @@ body {
 
 /* button bar for side-by-side buttons */
 #buttonBar {
-    display: flex;             
-    gap: 10px;                 
+    display: flex;
+    gap: 10px;
     justify-content: flex-start;
-    padding-left: 60px;
     margin-bottom: 15px;
 }
 #buttonBar button {
@@ -288,26 +323,6 @@ body {
     display:inline-block; 
 }
 
-#settingsBar {
-    position: fixed;
-    top: 0px;
-    right: 0;
-    width: 240px;                         /* was 220px */
-    height: 100vh;
-    background: rgba(169, 113, 79, 0.55);    /* rose-gold frosted glass */
-    backdrop-filter: blur(14px);              /* NEW — this is the frosted glass effect */
-    -webkit-backdrop-filter: blur(14px);      /* NEW — Safari support */
-    color: white;
-    padding: 0;                            /* was 20px — panel sections handle their own padding now */
-    box-shadow: -6px 0 32px rgba(0,0,0,0.55);  /* was -2px 0 8px */
-    font-family: 'Crimson Roman', serif;
-    z-index: 1000;
-    overflow-y: auto;
-    transition: margin-right 0.35s cubic-bezier(0.4, 0, 0.2, 1);  /* was 0.3s ease */
-    box-sizing: border-box;
-    border-left: 1px solid rgba(201, 153, 124, 0.18);  /* NEW */
-}
-
 #settingsBar button {
     display: flex;                         /* NEW */
     align-items: center;                   /* NEW */
@@ -328,11 +343,6 @@ body {
 #settingsBar button:hover {
     background-color: #6b4226;
     transform: translateX(3px);               /* NEW — the slide effect */
-}
-
-#settingsBar.collapsed {
-    margin-right: -240px;                  /* was -220px */
-    transition: margin-right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #settingsBar h3 {
@@ -1047,7 +1057,7 @@ body {
 body.theme-dark #deckSelector h3,
 body.theme-dark .deckTypeBtn,
 body.theme-dark .deckButton,
-body.theme-dark #toggleDeckBar,
+body.theme-dark .drawerNavArrow,
 body.theme-dark #buttonBar button,
 body.theme-dark #settingsBar,
 body.theme-dark #settingsBar h3,
@@ -1060,7 +1070,7 @@ body.theme-dark #settingsBar label {
 body.theme-light #deckSelector h3,
 body.theme-light .deckTypeBtn,
 body.theme-light .deckButton,
-body.theme-light #toggleDeckBar,
+body.theme-light .drawerNavArrow,
 body.theme-light #buttonBar button,
 body.theme-light #settingsBar,
 body.theme-light #settingsBar h3,

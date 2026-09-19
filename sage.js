@@ -117,17 +117,24 @@ document.querySelectorAll(".deckTypeBtn").forEach(btn => {
 // UI — PANEL TOGGLES
 // =============================================================================
 
-document.getElementById("toggleDeckBar").onclick = function () {
-    deckSelector.classList.toggle("collapsed");
-    const collapsed = deckSelector.classList.contains("collapsed");
-    this.classList.toggle("collapsed", collapsed);
-};
-
 document.addEventListener("DOMContentLoaded", () => {
-    const settingsBar = document.getElementById("settingsBar");
-    const toggleBtn   = document.getElementById("toggleSettingsBar");
-    settingsBar.classList.add("collapsed");
-    toggleBtn.onclick = () => settingsBar.classList.toggle("collapsed");
+    const sideDrawer       = document.getElementById("sideDrawer");
+    const drawerTrack      = document.getElementById("drawerTrack");
+    const toggleBtn        = document.getElementById("toggleSettingsBar");
+    const slideToSettings  = document.getElementById("slideToSettings");
+    const slideToDeck      = document.getElementById("slideToDeck");
+
+    sideDrawer.classList.add("collapsed");
+
+    toggleBtn.onclick = () => {
+        sideDrawer.classList.toggle("collapsed");
+        if (!sideDrawer.classList.contains("collapsed")) {
+            drawerTrack.classList.remove("showSettings"); // always open on the deck page
+        }
+    };
+
+    slideToSettings.onclick = () => drawerTrack.classList.add("showSettings");
+    slideToDeck.onclick     = () => drawerTrack.classList.remove("showSettings");
 });
 
 // =============================================================================
@@ -308,7 +315,7 @@ document.addEventListener("DOMContentLoaded", () => {
             document.body.classList.add(`theme-${theme}`);
         }
         overlay.classList.remove("open");
-        document.getElementById("settingsBar").classList.add("collapsed");
+        document.getElementById("sideDrawer").classList.add("collapsed");
     });
 
     overlay.addEventListener("click", (e) => {
@@ -371,7 +378,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function closeLayoutPicker() {
     document.getElementById("layoutPickerOverlay").classList.remove("open");
-    document.getElementById("settingsBar").classList.add("collapsed");
+    document.getElementById("sideDrawer").classList.add("collapsed");
 }
 
 // =============================================================================
