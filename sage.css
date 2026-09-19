@@ -119,7 +119,7 @@ body {
     position: fixed;
     bottom: 600px;
     right: 80px;
-    background: #f5e8da;
+    background: transparent;
     cursor: pointer;
     z-index: 1001;
     width: 60px;
