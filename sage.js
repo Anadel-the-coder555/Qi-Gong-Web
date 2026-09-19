@@ -491,6 +491,17 @@ async function saveCustomDecksToStorage(decks) {
             const tx = db.transaction(CUSTOM_DECKS_STORE_NAME, 'readwrite');
             const store = tx.objectStore(CUSTOM_DECKS_STORE_NAME);
 
+            // put() only upserts the keys we pass it — it never removes a
+            // record for a key that's missing from `decks`. Without this
+            // reconciliation step, a deleted deck's row survives in
+            // IndexedDB forever and comes back on every future load,
+            // looking like a "random" deck nobody created.
+            const keepIds = new Set(decks.map(deck => deck.id));
+            const existingKeys = await requestToPromise(store.getAllKeys());
+            existingKeys.forEach(key => {
+                if (!keepIds.has(key)) store.delete(key);
+            });
+
             decks.forEach(deck => store.put(deck));
             await new Promise((resolve, reject) => {
                 tx.oncomplete = () => resolve();
