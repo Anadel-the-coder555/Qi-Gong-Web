@@ -10,10 +10,10 @@
 <div id="deckSelector">
     <h3>Choose Deck</h3>
 
-    <!-- Tarot / Oracle slide toggle -->
+    <!-- Qi Gong / Tai Chi slide toggle -->
     <div id="deckTypeToggle">
-        <button class="deckTypeBtn active" data-type="tarot">Tarot</button>
-        <button class="deckTypeBtn" data-type="oracle">Oracle</button>
+        <button class="deckTypeBtn active" data-type="qigong">Qi Gong</button>
+        <button class="deckTypeBtn" data-type="taichi">Tai Chi</button>
     </div>
 
     <!-- Deck buttons injected here by JS, filtered by data-type -->
@@ -66,11 +66,8 @@
     <h3>Choose Layout</h3>
     <div id="layoutGrid">
       <button onclick="openCustomLayoutBuilder()">Custom</button>  <!-- ADD THIS -->
-      <button onclick="setLayout('tarot');closeLayoutPicker()">2x4</button>
-      <button onclick="setLayout('dragon');closeLayoutPicker()">Dragon Rune</button>
-      <button onclick="setLayout('circle');closeLayoutPicker()">Circular</button>
+      <button onclick="setLayout('grid');closeLayoutPicker()">2x4</button>
       <button onclick="setLayout('slant');closeLayoutPicker()">Slant</button>
-      <button onclick="setLayout('celtic');closeLayoutPicker()">Celtic Cross</button>
       <button onclick="setLayout('vformation');closeLayoutPicker()">V-Formation</button>
     </div>
     <button id="layoutPickerCancel">Cancel</button>
@@ -353,18 +350,10 @@
           </div>
 
           <div class="customDeckField">
-            <label>Type</label>
-            <div id="customDeckTypeToggle">
-              <button class="customDeckTypeBtn active" data-type="tarot" onclick="setCustomDeckType(this)">Tarot (78)</button>
-              <button class="customDeckTypeBtn" data-type="oracle" onclick="setCustomDeckType(this)">Oracle</button>
-            </div>
-          </div>
-
-          <div class="customDeckField">
             <label>Appears under tab</label>
             <div id="customDeckTabToggle">
-              <button class="customDeckTabBtn active" data-tab="tarot" onclick="setCustomDeckTab(this)">Tarot</button>
-              <button class="customDeckTabBtn" data-tab="oracle" onclick="setCustomDeckTab(this)">Oracle</button>
+              <button class="customDeckTabBtn active" data-tab="qigong" onclick="setCustomDeckTab(this)">Qi Gong</button>
+              <button class="customDeckTabBtn" data-tab="taichi" onclick="setCustomDeckTab(this)">Tai Chi</button>
             </div>
           </div>
 
@@ -379,17 +368,26 @@
           </div>
 
           <div class="customDeckField">
-            <label>Bulk Card Images</label>
+            <label>Move Images</label>
             <div class="customDeckUploadRow">
               <label class="customDeckUploadBtn" for="customDeckCardsInput">Upload folder or files…</label>
               <input type="file" id="customDeckCardsInput" accept="image/*" multiple webkitdirectory directory onchange="handleBulkCardUpload(event)" />
-              <span>Pick a folder or several card images at once</span>
+              <span>Picture of each move, in order</span>
+            </div>
+          </div>
+
+          <div class="customDeckField">
+            <label>Meaning Images</label>
+            <div class="customDeckUploadRow">
+              <label class="customDeckUploadBtn" for="customDeckMeaningInput">Upload folder or files…</label>
+              <input type="file" id="customDeckMeaningInput" accept="image/*" multiple webkitdirectory directory onchange="handleBulkMeaningUpload(event)" />
+              <span>Meaning for each move, in the same order</span>
             </div>
           </div>
         </div>
 
         <div id="customDeckPreviewPanel">
-          <div class="customDeckPanelHeader">Card Images</div>
+          <div class="customDeckPanelHeader">Move &amp; Meaning Images</div>
           <div id="createCarousel" class="deckCarousel"></div>
         </div>
 

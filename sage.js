@@ -1,43 +1,4 @@
 // =============================================================================
-// CARD DEFINITIONS
-// Defined once. All decks reference these shared lists.
-// =============================================================================
-
-const MAJOR_ARCANA = [
-    "The Fool", "The Magician", "The High Priestess", "The Empress", "The Emperor",
-    "The Hierophant", "The Lovers", "The Chariot", "Strength", "The Hermit",
-    "Wheel of Fortune", "Justice", "The Hanged Man", "Death", "Temperance",
-    "The Devil", "The Tower", "The Star", "The Moon", "The Sun", "Divine Timing",
-    "Judgement", "The World"
-];
-
-const CUPS = [
-    "Ace of Cups", "Two of Cups", "Three of Cups", "Four of Cups", "Five of Cups",
-    "Six of Cups", "Seven of Cups", "Eight of Cups", "Nine of Cups", "Ten of Cups",
-    "Page of Cups", "Knight of Cups", "Queen of Cups", "King of Cups"
-];
-
-const PENTACLES = [
-    "Ace of Pentacles", "Two of Pentacles", "Three of Pentacles", "Four of Pentacles", "Five of Pentacles",
-    "Six of Pentacles", "Seven of Pentacles", "Eight of Pentacles", "Nine of Pentacles", "Ten of Pentacles",
-    "Page of Pentacles", "Knight of Pentacles", "Queen of Pentacles", "King of Pentacles"
-];
-
-const SWORDS = [
-    "Ace of Swords", "Two of Swords", "Three of Swords", "Four of Swords", "Five of Swords",
-    "Six of Swords", "Seven of Swords", "Eight of Swords", "Nine of Swords", "Ten of Swords",
-    "Page of Swords", "Knight of Swords", "Queen of Swords", "King of Swords"
-];
-
-const WANDS = [
-    "Ace of Wands", "Two of Wands", "Three of Wands", "Four of Wands", "Five of Wands",
-    "Six of Wands", "Seven of Wands", "Eight of Wands", "Nine of Wands", "Ten of Wands",
-    "Page of Wands", "Knight of Wands", "Queen of Wands", "King of Wands"
-];
-
-const STANDARD_78 = [...MAJOR_ARCANA, ...CUPS, ...PENTACLES, ...SWORDS, ...WANDS];
-
-// =============================================================================
 // DECK REGISTRY
 // =============================================================================
 
@@ -54,13 +15,19 @@ function getCardImagePath(deckName, cardId) {
     return cfg.cardMap[cardId] || null;
 }
 
+function getMeaningImagePath(deckName, cardId) {
+    const cfg = deckConfig[deckName];
+    if (!cfg) return null;
+    return cfg.meaningMap?.[cardId] || null;
+}
+
 // =============================================================================
 // LAYOUTS
 // Add new layouts here — positions and draw order only.
 // =============================================================================
 
 const layouts = {
-    tarot: {
+    grid: {
         cardSize: { width: '200px', height: '300px' },
         1: { x: '25%', y: '25%' },
         2: { x: '42%', y: '25%' },
@@ -70,27 +37,6 @@ const layouts = {
         6: { x: '42%', y: '72%' },
         7: { x: '59%', y: '72%' },
         8: { x: '76%', y: '72%' },
-    },
-    dragon: {
-        cardSize: { width: '80px', height: '130px' },
-        1:  { x: '45%', y: '10%' },
-        2:  { x: '45%', y: '40%' },
-        3:  { x: '55%', y: '15%' },
-        4:  { x: '35%', y: '15%' },
-        5:  { x: '45%', y: '60%' },
-        6:  { x: '25%', y: '40%' },
-        7:  { x: '15%', y: '30%' },
-        8:  { x: '65%', y: '40%' },
-        9:  { x: '75%', y: '30%' },
-        10: { x: '45%', y: '85%' },
-    },
-    circle: {
-        cardSize: { width: '80px', height: '130px' },
-        1: { x: '50%', y: '15%' },
-        2: { x: '83%', y: '31%' },
-        3: { x: '71%', y: '68%' },
-        4: { x: '29%', y: '68%' },
-        5: { x: '17%', y: '31%' },
     },
     slant: {
         cardSize: { width: '120px', height: '200px' },
@@ -109,29 +55,11 @@ const layouts = {
         6: { x: '76%', y: '28%' },  // 6
         7: { x: '92%', y: '8%'  },  // 7 – right tip
     },
-
-    celtic: {
-        cardSize: { width: '120px', height: '200px' },
-        1:  { x: '35%', y: '40%' },
-        2:  { x: '35%', y: '40%', rotate: 90 },
-        3:  { x: '35%', y: '20%' },
-        4:  { x: '35%', y: '60%' },
-        5:  { x: '15%', y: '40%' },
-        6:  { x: '55%', y: '40%' },
-        7:  { x: '75%', y: '70%' },
-        8:  { x: '75%', y: '55%' },
-        9:  { x: '75%', y: '40%' },
-        10: { x: '75%', y: '25%' },
-},
-
 };
 
 const drawOrders = {
-    tarot:  [1, 2, 3, 4, 5, 6, 7, 8],
-    dragon: [4, 1, 3, 6, 2, 8, 7, 9, 5, 10],
-    circle: [1, 2, 3, 4, 5],
-    slant: [1, 2, 3, 4],
-    celtic: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    grid:       [1, 2, 3, 4, 5, 6, 7, 8],
+    slant:      [1, 2, 3, 4],
     vformation: [1, 7, 2, 6, 3, 5, 4],
     // ADD THIS:
     custom: [],
@@ -143,11 +71,11 @@ const drawOrders = {
 
 let currentDeckName = null;
 let currentDeck     = [];
-let activeDeckType  = "tarot";
+let activeDeckType  = "qigong";
 let layoutIndex     = 0;
-let currentLayout = 'tarot';
-let positions       = layouts.tarot;      // default layout
-let drawOrder       = drawOrders.tarot;   // default draw order
+let currentLayout = 'grid';
+let positions       = layouts.grid;      // default layout
+let drawOrder       = drawOrders.grid;   // default draw order
 
 // =============================================================================
 // LAYOUT SWITCHER
@@ -521,8 +449,7 @@ function playTrack(btn, src) {
 
 let customDeckCards    = [];
 let customDeckCoverUrl = null;
-let customDeckType     = 'tarot';
-let customDeckTab      = 'tarot';
+let customDeckTab      = 'qigong';
 let editingDeckId      = null;
 let activeDeckCarouselApi = null;
 
@@ -597,11 +524,15 @@ async function getStoredCustomDecks() {
     return JSON.parse(localStorage.getItem(CUSTOM_DECKS_STORAGE_KEY) || '[]');
 }
 
+const LEGACY_DECK_TYPE_MAP = { tarot: 'qigong', oracle: 'taichi' };
+
 // Decks saved before cards had stable ids only have {name, dataUrl}. Assign
 // each an id in place so old decks stop relying on name-based identity —
 // this is what causes duplicated/ghost cards, since a display name is
 // user-editable and easy to collide (e.g. two cards renamed identically, or
-// a new slot's auto-generated name matching an already-used one).
+// a new slot's auto-generated name matching an already-used one). Also
+// remaps decks saved under the old Tarot/Oracle tabs onto Qi Gong/Tai Chi so
+// they don't vanish from both tabs after the rename.
 function migrateLegacyDeckCards(deckData) {
     let changed = false;
     deckData.cards = (deckData.cards || []).map(c => {
@@ -609,6 +540,10 @@ function migrateLegacyDeckCards(deckData) {
         changed = true;
         return { id: generateCardId(), name: c.name, dataUrl: c.dataUrl };
     });
+    if (LEGACY_DECK_TYPE_MAP[deckData.type]) {
+        deckData.type = LEGACY_DECK_TYPE_MAP[deckData.type];
+        changed = true;
+    }
     return changed;
 }
 
@@ -636,8 +571,7 @@ async function loadCustomDecksFromStorage() {
 function resetCustomDeckForm() {
     customDeckCards    = [];
     customDeckCoverUrl = null;
-    customDeckType     = 'tarot';
-    customDeckTab      = 'tarot';
+    customDeckTab      = 'qigong';
     editingDeckId      = null;
 
     document.getElementById('customDeckName').value           = '';
@@ -646,14 +580,11 @@ function resetCustomDeckForm() {
     document.getElementById('customDeckSaveBtn').disabled      = true;
     document.getElementById('customDeckSaveBtn').textContent   = 'Create Deck';
 
-    document.querySelectorAll('.customDeckTypeBtn').forEach(b => {
-        b.classList.toggle('active', b.dataset.type === 'tarot');
-    });
     document.querySelectorAll('.customDeckTabBtn').forEach(b => {
-        b.classList.toggle('active', b.dataset.tab === 'tarot');
+        b.classList.toggle('active', b.dataset.tab === 'qigong');
     });
 
-    activeDeckCarouselApi = createCarousel('createCarousel', [], customDeckType, (filledCards) => {
+    activeDeckCarouselApi = createCarousel('createCarousel', [], (filledCards) => {
         customDeckCards = filledCards;
         checkCustomDeckReady();
     });
@@ -680,8 +611,7 @@ function closeCustomDeckBuilder() {
 
 const CAROUSEL_VISIBLE = 3;
 
-function getAutoCardName(idx, type) {
-    if (type === 'tarot' && STANDARD_78[idx]) return STANDARD_78[idx];
+function getAutoCardName(idx) {
     return `Card ${idx + 1}`;
 }
 
@@ -726,16 +656,32 @@ function readFileAsDataUrl(file, options = {}) {
     });
 }
 
-function createCarousel(containerId, initialCards, deckType, onUpdate) {
+// Each card pairs two images — the move (dataUrl) and its meaning (meaningDataUrl) —
+// so a slot is "started" once either one is present, but a card only becomes
+// drawable-with-a-meaning once both are filled in.
+function makeEmptyCard(idx) {
+    return { id: null, name: getAutoCardName(idx), dataUrl: null, meaningDataUrl: null };
+}
+
+function createCarousel(containerId, initialCards, onUpdate) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
     let cards = initialCards.length > 0
-        ? [...initialCards, { id: null, name: getAutoCardName(initialCards.length, deckType), dataUrl: null }]
-        : [{ id: null, name: getAutoCardName(0, deckType), dataUrl: null }];
+        ? [
+            ...initialCards.map(c => ({
+                id: c.id || null,
+                name: c.name,
+                dataUrl: c.dataUrl || null,
+                meaningDataUrl: c.meaningDataUrl || null,
+            })),
+            makeEmptyCard(initialCards.length),
+        ]
+        : [makeEmptyCard(0)];
 
-    let offset      = 0;
-    let pendingSlot = null;
+    let offset       = 0;
+    let pendingSlot  = null;
+    let pendingField = null;
 
     const fileInput = document.createElement('input');
     fileInput.type    = 'file';
@@ -745,15 +691,10 @@ function createCarousel(containerId, initialCards, deckType, onUpdate) {
 
     fileInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
-        if (!file || pendingSlot === null) return;
+        if (!file || pendingSlot === null || !pendingField) return;
         try {
             const dataUrl = await readFileAsDataUrl(file, { maxWidth: 560, maxHeight: 900, mimeType: 'image/jpeg', quality: 0.8 });
-            cards[pendingSlot].dataUrl = dataUrl;
-            cards[pendingSlot].id      = cards[pendingSlot].id || generateCardId();
-            ensureEmptySlot();
-            render();
-            onUpdate(getFilledCards());
-            if (typeof checkCustomDeckReady === 'function') checkCustomDeckReady();
+            setCardField(pendingSlot, pendingField, dataUrl);
         } catch (err) {
             console.error(err);
         }
@@ -761,38 +702,85 @@ function createCarousel(containerId, initialCards, deckType, onUpdate) {
     });
 
     function getFilledCards() {
-        return cards.filter(c => c.dataUrl !== null);
+        return cards.filter(c => c.dataUrl !== null || c.meaningDataUrl !== null);
     }
 
     function ensureEmptySlot() {
-        const filledCards = cards.filter(c => c.dataUrl !== null);
-        cards = [...filledCards, { id: null, name: getAutoCardName(filledCards.length, deckType), dataUrl: null }];
+        const filledCards = getFilledCards();
+        cards = [...filledCards, makeEmptyCard(filledCards.length)];
     }
 
-    function triggerUpload(idx) {
-        pendingSlot = idx;
+    function triggerUpload(idx, field) {
+        pendingSlot  = idx;
+        pendingField = field;
         fileInput.click();
+    }
+
+    function setCardField(idx, field, dataUrl) {
+        if (!cards[idx]) cards[idx] = makeEmptyCard(idx);
+        cards[idx][field] = dataUrl;
+        cards[idx].id = cards[idx].id || generateCardId();
+        ensureEmptySlot();
+        render();
+        onUpdate(getFilledCards());
+        if (typeof checkCustomDeckReady === 'function') checkCustomDeckReady();
+    }
+
+    function clearCardField(idx, field) {
+        if (!cards[idx]) return;
+        cards[idx][field] = null;
+        if (!cards[idx].dataUrl && !cards[idx].meaningDataUrl) {
+            if (cards.length > 1) cards.splice(idx, 1);
+            else cards[idx].id = null;
+        }
+        offset = Math.min(offset, Math.max(0, cards.length - CAROUSEL_VISIBLE));
+        ensureEmptySlot();
+        render();
+        onUpdate(getFilledCards());
+        if (typeof checkCustomDeckReady === 'function') checkCustomDeckReady();
+    }
+
+    // Merges a bulk-uploaded list of images into one field (move or meaning)
+    // by index, leaving the other field of each card untouched so the two
+    // upload rows can be filled in any order.
+    function setFieldImages(field, dataUrls) {
+        dataUrls.forEach((dataUrl, idx) => {
+            if (!cards[idx]) cards[idx] = makeEmptyCard(idx);
+            cards[idx][field] = dataUrl;
+            cards[idx].id = cards[idx].id || generateCardId();
+        });
+        offset = 0;
+        ensureEmptySlot();
+        render();
+        onUpdate(getFilledCards());
+        if (typeof checkCustomDeckReady === 'function') checkCustomDeckReady();
     }
 
     const api = {
         replaceCards(nextCards) {
-            cards = (nextCards.length > 0 ? nextCards : [{ id: null, name: getAutoCardName(0, deckType), dataUrl: null }])
+            cards = (nextCards.length > 0 ? nextCards : [makeEmptyCard(0)])
                 .map((card, idx) => ({
-                    id: card.dataUrl ? (card.id || generateCardId()) : null,
-                    name: card.name || getAutoCardName(idx, deckType),
+                    id: (card.dataUrl || card.meaningDataUrl) ? (card.id || generateCardId()) : null,
+                    name: card.name || getAutoCardName(idx),
                     dataUrl: card.dataUrl || null,
+                    meaningDataUrl: card.meaningDataUrl || null,
                 }));
             offset = 0;
             ensureEmptySlot();
             render();
             onUpdate(getFilledCards());
             if (typeof checkCustomDeckReady === 'function') checkCustomDeckReady();
-        }
+        },
+        setMoveImages(dataUrls) { setFieldImages('dataUrl', dataUrls); },
+        setMeaningImages(dataUrls) { setFieldImages('meaningDataUrl', dataUrls); },
     };
 
     function deleteCard(idx) {
-        if (cards.filter(c => c.dataUrl).length <= 1 && cards[idx].dataUrl) {
+        const hasAny = cards[idx] && (cards[idx].dataUrl || cards[idx].meaningDataUrl);
+        if (getFilledCards().length <= 1 && hasAny) {
             cards[idx].dataUrl = null;
+            cards[idx].meaningDataUrl = null;
+            cards[idx].id = null;
         } else {
             cards.splice(idx, 1);
         }
@@ -808,6 +796,71 @@ function createCarousel(containerId, initialCards, deckType, onUpdate) {
         render();
     }
 
+    function buildImageSlot(realIdx, field, label) {
+        const wrap = document.createElement('div');
+        wrap.className = 'card-slot-wrap';
+
+        const labelEl = document.createElement('div');
+        labelEl.className = 'card-slot-label';
+        labelEl.textContent = label;
+        wrap.appendChild(labelEl);
+
+        const value = cards[realIdx][field];
+        const slot = document.createElement('div');
+        slot.className = 'card-slot' + (value ? ' filled' : '');
+
+        if (value) {
+            const img = document.createElement('img');
+            img.src = value;
+            slot.appendChild(img);
+
+            const overlay = document.createElement('div');
+            overlay.className = 'card-slot-overlay';
+
+            const replBtn = document.createElement('button');
+            replBtn.textContent = 'Replace';
+            replBtn.onclick = () => triggerUpload(realIdx, field);
+
+            const clearBtn = document.createElement('button');
+            clearBtn.textContent = 'Clear';
+            clearBtn.className   = 'del-btn';
+            clearBtn.onclick     = () => clearCardField(realIdx, field);
+
+            overlay.appendChild(replBtn);
+            overlay.appendChild(clearBtn);
+            slot.appendChild(overlay);
+        } else {
+            const ph = document.createElement('div');
+            ph.className = 'card-slot-placeholder';
+            ph.innerHTML = `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M24 32V16M24 16L18 22M24 16L30 22" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 36a8 8 0 01-1.5-15.8A10 10 0 1132 28h2a6 6 0 000-12h-1A10 10 0 0012 28v8z" stroke="white" stroke-width="2" fill="none"/>
+            </svg><span>Click or drop</span>`;
+            slot.appendChild(ph);
+            slot.onclick = () => triggerUpload(realIdx, field);
+
+            slot.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                slot.style.borderColor = '#fff';
+            });
+            slot.addEventListener('dragleave', () => {
+                slot.style.borderColor = '';
+            });
+            slot.addEventListener('drop', (e) => {
+                e.preventDefault();
+                slot.style.borderColor = '';
+                const file = e.dataTransfer.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => setCardField(realIdx, field, ev.target.result);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        wrap.appendChild(slot);
+        return wrap;
+    }
+
     function render() {
         container.innerHTML = '';
         container.appendChild(fileInput);
@@ -815,7 +868,7 @@ function createCarousel(containerId, initialCards, deckType, onUpdate) {
 
         const counter = document.createElement('div');
         counter.className = 'carousel-counter';
-        const filled = cards.filter(c => c.dataUrl).length;
+        const filled = getFilledCards().length;
         counter.textContent = `${filled} card${filled !== 1 ? 's' : ''} uploaded`;
         container.appendChild(counter);
 
@@ -847,62 +900,8 @@ function createCarousel(containerId, initialCards, deckType, onUpdate) {
 
             if (!card) { cardsEl.appendChild(col); return; }
 
-            const slot = document.createElement('div');
-            slot.className = 'card-slot' + (card.dataUrl ? ' filled' : '');
-
-            if (card.dataUrl) {
-                const img = document.createElement('img');
-                img.src = card.dataUrl;
-                slot.appendChild(img);
-
-                const overlay = document.createElement('div');
-                overlay.className = 'card-slot-overlay';
-
-                const replBtn = document.createElement('button');
-                replBtn.textContent = 'Replace';
-                replBtn.onclick = () => triggerUpload(realIdx);
-
-                const delBtn = document.createElement('button');
-                delBtn.textContent = 'Remove';
-                delBtn.className   = 'del-btn';
-                delBtn.onclick     = () => deleteCard(realIdx);
-
-                overlay.appendChild(replBtn);
-                overlay.appendChild(delBtn);
-                slot.appendChild(overlay);
-            } else {
-                const ph = document.createElement('div');
-                ph.className = 'card-slot-placeholder';
-                ph.innerHTML = `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M24 32V16M24 16L18 22M24 16L30 22" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M12 36a8 8 0 01-1.5-15.8A10 10 0 1132 28h2a6 6 0 000-12h-1A10 10 0 0012 28v8z" stroke="white" stroke-width="2" fill="none"/>
-                </svg><span>Click or drop</span>`;
-                slot.appendChild(ph);
-                slot.onclick = () => triggerUpload(realIdx);
-
-                slot.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    slot.style.borderColor = '#fff';
-                });
-                slot.addEventListener('dragleave', () => {
-                    slot.style.borderColor = '';
-                });
-                slot.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    slot.style.borderColor = '';
-                    const file = e.dataTransfer.files[0];
-                    if (!file || !file.type.startsWith('image/')) return;
-                    const reader = new FileReader();
-                    reader.onload = (ev) => {
-                        cards[realIdx].dataUrl = ev.target.result;
-                        cards[realIdx].id      = cards[realIdx].id || generateCardId();
-                        ensureEmptySlot();
-                        render();
-                        onUpdate(getFilledCards());
-                    };
-                    reader.readAsDataURL(file);
-                });
-            }
+            col.appendChild(buildImageSlot(realIdx, 'dataUrl', 'Move'));
+            col.appendChild(buildImageSlot(realIdx, 'meaningDataUrl', 'Meaning'));
 
             const nameInput = document.createElement('input');
             nameInput.type        = 'text';
@@ -913,9 +912,17 @@ function createCarousel(containerId, initialCards, deckType, onUpdate) {
                 cards[realIdx].name = nameInput.value;
                 onUpdate(getFilledCards());
             };
-
-            col.appendChild(slot);
             col.appendChild(nameInput);
+
+            if (card.dataUrl || card.meaningDataUrl) {
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'carousel-card-remove';
+                removeBtn.textContent = 'Remove card';
+                removeBtn.onclick = () => deleteCard(realIdx);
+                col.appendChild(removeBtn);
+            }
+
             cardsEl.appendChild(col);
         });
 
@@ -939,26 +946,37 @@ function createCarousel(containerId, initialCards, deckType, onUpdate) {
     return api;
 }
 
-async function handleBulkCardUpload(event) {
-    const files = Array.from(event.target.files || []).filter(file => file.type.startsWith('image/'));
-    if (!files.length || !activeDeckCarouselApi) return;
-
-    const preparedCards = [];
-    for (const [idx, file] of files.entries()) {
-        const dataUrl = await readFileAsDataUrl(file, {
+async function readFilesAsDataUrls(files) {
+    const dataUrls = [];
+    for (const file of files) {
+        dataUrls.push(await readFileAsDataUrl(file, {
             maxWidth: 560,
             maxHeight: 900,
             mimeType: 'image/jpeg',
             quality: 0.8,
-        });
-        preparedCards.push({
-            name: getAutoCardName(idx, customDeckType),
-            dataUrl,
-        });
+        }));
     }
+    return dataUrls;
+}
 
-    activeDeckCarouselApi.replaceCards(preparedCards);
-    if (typeof checkCustomDeckReady === 'function') checkCustomDeckReady();
+// Move and meaning images are uploaded as two separate rows and merged by
+// index into the same card list, so either row can be filled first or
+// re-uploaded without wiping out the other.
+async function handleBulkCardUpload(event) {
+    const files = Array.from(event.target.files || []).filter(file => file.type.startsWith('image/'));
+    if (!files.length || !activeDeckCarouselApi) return;
+
+    const dataUrls = await readFilesAsDataUrls(files);
+    activeDeckCarouselApi.setMoveImages(dataUrls);
+    event.target.value = '';
+}
+
+async function handleBulkMeaningUpload(event) {
+    const files = Array.from(event.target.files || []).filter(file => file.type.startsWith('image/'));
+    if (!files.length || !activeDeckCarouselApi) return;
+
+    const dataUrls = await readFilesAsDataUrls(files);
+    activeDeckCarouselApi.setMeaningImages(dataUrls);
     event.target.value = '';
 }
 
@@ -970,12 +988,6 @@ function switchDeckModalTab(tab, btn) {
     document.getElementById('customDeckViewMyDecks').style.display  = tab === 'manage' ? 'flex' : 'none';
 
     if (tab === 'manage') renderMyDecksList();
-}
-
-function setCustomDeckType(btn) {
-    customDeckType = btn.dataset.type;
-    document.querySelectorAll('.customDeckTypeBtn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
 }
 
 function setCustomDeckTab(btn) {
@@ -1022,10 +1034,9 @@ async function saveCustomDeck() {
     const deckData = {
         id,
         name,
-        type:     customDeckTab,
-        deckType: customDeckType,
-        cover:    customDeckCoverUrl,
-        cards:    customDeckCards,
+        type:  customDeckTab,
+        cover: customDeckCoverUrl,
+        cards: customDeckCards,
     };
 
     try {
@@ -1062,8 +1073,9 @@ function buildDeckConfigEntry(deckData) {
         cover:   deckData.cover,
         type:    deckData.type,
         custom:  true,
-        cardMap:  Object.fromEntries(validCards.map(c => [c.id, c.dataUrl])),
-        nameMap:  Object.fromEntries(validCards.map(c => [c.id, c.name])),
+        cardMap:    Object.fromEntries(validCards.map(c => [c.id, c.dataUrl])),
+        meaningMap: Object.fromEntries(validCards.filter(c => c.meaningDataUrl).map(c => [c.id, c.meaningDataUrl])),
+        nameMap:    Object.fromEntries(validCards.map(c => [c.id, c.name])),
     };
 }
 
@@ -1088,6 +1100,8 @@ function updateRegisteredCustomDeck(deckData) {
 
     if (currentDeckName === deckData.id) {
         currentDeck = [...deckConfig[deckData.id].cards];
+        layoutIndex = 0;
+        document.getElementById("table").innerHTML = "";
         createDeck();
     }
 }
@@ -1133,7 +1147,7 @@ async function renderMyDecksList() {
 
         const metaEl = document.createElement('div');
         metaEl.className = 'myDeckMeta';
-        metaEl.textContent = `${deckData.type === 'oracle' ? 'Oracle' : 'Tarot'} tab · ${deckData.cards.length} card${deckData.cards.length !== 1 ? 's' : ''}`;
+        metaEl.textContent = `${deckData.type === 'taichi' ? 'Tai Chi' : 'Qi Gong'} tab · ${deckData.cards.length} card${deckData.cards.length !== 1 ? 's' : ''}`;
 
         info.appendChild(nameEl);
         info.appendChild(metaEl);
@@ -1165,7 +1179,6 @@ async function startEditDeck(id) {
     if (!deckData) return;
 
     editingDeckId       = id;
-    customDeckType      = deckData.deckType;
     customDeckTab       = deckData.type;
     customDeckCoverUrl  = deckData.cover;
     customDeckCards     = [...deckData.cards];
@@ -1176,14 +1189,11 @@ async function startEditDeck(id) {
     preview.src = deckData.cover;
     preview.style.display = 'block';
 
-    document.querySelectorAll('.customDeckTypeBtn').forEach(b => {
-        b.classList.toggle('active', b.dataset.type === customDeckType);
-    });
     document.querySelectorAll('.customDeckTabBtn').forEach(b => {
         b.classList.toggle('active', b.dataset.tab === customDeckTab);
     });
 
-    activeDeckCarouselApi = createCarousel('createCarousel', deckData.cards, customDeckType, (filledCards) => {
+    activeDeckCarouselApi = createCarousel('createCarousel', deckData.cards, (filledCards) => {
         customDeckCards = filledCards;
         checkCustomDeckReady();
     });
@@ -1233,6 +1243,8 @@ async function deleteCustomDeck(id, btnEl) {
     if (currentDeckName === id) {
         currentDeckName = null;
         currentDeck = [];
+        layoutIndex = 0;
+        document.getElementById("table").innerHTML = "";
         createDeck();
     }
 }
@@ -1244,6 +1256,13 @@ async function deleteCustomDeck(id, btnEl) {
 function selectDeck(deckName) {
     currentDeckName = deckName;
     currentDeck     = [...deckConfig[deckName].cards];
+    // layoutIndex counts spread positions filled and is shared across every
+    // deck in the session — without resetting it here, switching decks
+    // silently "runs out" of positions early (drawCard just bounces the
+    // card back with nothing shown) once the running total hits the
+    // layout's position count.
+    layoutIndex = 0;
+    document.getElementById("table").innerHTML = "";
     createDeck();
 }
 
@@ -1278,9 +1297,9 @@ function createDeck() {
         let cardBack = existingChildren[index];
         if (!cardBack) {
             cardBack = document.createElement("div");
-            cardBack.onclick = () => drawCard(cardBack, card, currentDeckName);
             fragment.appendChild(cardBack);
         }
+        cardBack.onclick = () => drawCard(cardBack, card, currentDeckName);
 
         const isCircular = deckConfigEntry.circular;
         cardBack.className = "deckCard" + (isCircular ? " circular" : "");
@@ -1301,6 +1320,37 @@ function createDeck() {
 // DRAW CARD
 // =============================================================================
 
+// Builds one card face (either the move card or the meaning card below it).
+function buildCardFace({ imgSrc, fallbackText, isCircular, pos, size, rotate, extraClass }) {
+    const cardDiv = document.createElement("div");
+    cardDiv.className = "card" + (isCircular ? " circular" : "") + (extraClass ? ` ${extraClass}` : "");
+
+    if (imgSrc) {
+        const safePath = imgSrc.replace(/ /g, "%20");
+        cardDiv.style.backgroundImage    = `url("${safePath}")`;
+        cardDiv.style.backgroundSize     = isCircular ? "160%" : "cover";
+        cardDiv.style.backgroundPosition = "center";
+    } else {
+        // Should not happen — buildDeckConfigEntry() filters out cards with
+        // no move image before they ever reach the draw list. Kept as a safe
+        // display-only fallback rather than letting a broken card vanish
+        // silently mid-reading.
+        cardDiv.classList.add("missingCardImage");
+        cardDiv.innerText = fallbackText;
+    }
+
+    cardDiv.style.position  = "absolute";
+    cardDiv.style.left      = pos.x;
+    cardDiv.style.top       = pos.y;
+    cardDiv.style.width     = size.width;
+    cardDiv.style.height    = isCircular ? size.width : size.height;
+    cardDiv.style.transform = `translate(-50%, -50%) rotate(${rotate}deg)`;
+
+    return cardDiv;
+}
+
+const MEANING_CARD_GAP_PX = 14;
+
 function drawCard(cardElement, cardId, deckName) {
     cardElement.remove();
 
@@ -1313,41 +1363,44 @@ function drawCard(cardElement, cardId, deckName) {
         return;
     }
 
-    const cardDiv = document.createElement("div");
     const isCircular = deckConfig[deckName].circular;
-    cardDiv.className = "card" + (isCircular ? " circular" : "");
-
-    const imgSrc = getCardImagePath(deckName, cardId);
-
-    if (imgSrc) {
-        const safePath = imgSrc.replace(/ /g, "%20");
-        cardDiv.style.backgroundImage    = `url("${safePath}")`;
-        cardDiv.style.backgroundSize     = isCircular ? "160%" : "cover";
-        cardDiv.style.backgroundPosition = "center";
-    } else {
-        // Should not happen — buildDeckConfigEntry() filters out cards with
-        // no image before they ever reach the draw list. Kept as a safe
-        // display-only fallback rather than letting a broken card vanish
-        // silently mid-reading.
-        const displayName = deckConfig[deckName]?.nameMap?.[cardId] || "Unknown Card";
-        cardDiv.classList.add("missingCardImage");
-        cardDiv.innerText = displayName;
-    }
-
-    cardDiv.style.position = "absolute";
-
-    const cardNum = drawOrder[layoutIndex];
-    const pos     = positions[cardNum];
-    const size    = layouts[currentLayout].cardSize;
-    cardDiv.style.left      = pos.x;
-    cardDiv.style.top       = pos.y;
-    cardDiv.style.width     = size.width;
-    cardDiv.style.height    = isCircular ? size.width : size.height;
-    const rotate = pos.rotate || 0;
-    cardDiv.style.transform = `translate(-50%, -50%) rotate(${rotate}deg)`;
+    const cardNum     = drawOrder[layoutIndex];
+    const pos         = positions[cardNum];
+    const size        = layouts[currentLayout].cardSize;
+    const rotate      = pos.rotate || 0;
     layoutIndex++;
 
-    document.getElementById("table").appendChild(cardDiv);
+    const table = document.getElementById("table");
+
+    const cardDiv = buildCardFace({
+        imgSrc: getCardImagePath(deckName, cardId),
+        fallbackText: deckConfig[deckName]?.nameMap?.[cardId] || "Unknown Card",
+        isCircular,
+        pos,
+        size,
+        rotate,
+    });
+    table.appendChild(cardDiv);
+
+    // The meaning card is optional per-card — only shown when the deck
+    // creator uploaded a meaning image for this card — and is placed
+    // directly beneath the move card, aligned to the same column/rotation.
+    const meaningSrc = getMeaningImagePath(deckName, cardId);
+    if (meaningSrc) {
+        const cardHeightPx = isCircular ? 120 : parseFloat(size.height);
+        const meaningPos = { x: pos.x, y: `calc(${pos.y} + ${cardHeightPx}px + ${MEANING_CARD_GAP_PX}px)` };
+
+        const meaningDiv = buildCardFace({
+            imgSrc: meaningSrc,
+            fallbackText: "",
+            isCircular,
+            pos: meaningPos,
+            size,
+            rotate,
+            extraClass: "meaningCard",
+        });
+        table.appendChild(meaningDiv);
+    }
 }
 
 function refreshReading() {
