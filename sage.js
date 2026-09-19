@@ -15,12 +15,6 @@ function getCardImagePath(deckName, cardId) {
     return cfg.cardMap[cardId] || null;
 }
 
-function getMeaningImagePath(deckName, cardId) {
-    const cfg = deckConfig[deckName];
-    if (!cfg) return null;
-    return cfg.meaningMap?.[cardId] || null;
-}
-
 function getCardDescription(deckName, cardId) {
     const cfg = deckConfig[deckName];
     if (!cfg) return null;
@@ -708,11 +702,8 @@ function readFileAsDataUrl(file, options = {}) {
     });
 }
 
-// Each card pairs two images — the move (dataUrl) and its meaning (meaningDataUrl) —
-// so a slot is "started" once either one is present, but a card only becomes
-// drawable-with-a-meaning once both are filled in.
 function makeEmptyCard(idx) {
-    return { id: null, name: getAutoCardName(idx), dataUrl: null, meaningDataUrl: null };
+    return { id: null, name: getAutoCardName(idx), dataUrl: null };
 }
 
 function createCarousel(containerId, initialCards, onUpdate) {
@@ -725,7 +716,6 @@ function createCarousel(containerId, initialCards, onUpdate) {
                 id: c.id || null,
                 name: c.name,
                 dataUrl: c.dataUrl || null,
-                meaningDataUrl: c.meaningDataUrl || null,
             })),
             makeEmptyCard(initialCards.length),
         ]
@@ -733,7 +723,6 @@ function createCarousel(containerId, initialCards, onUpdate) {
 
     let offset       = 0;
     let pendingSlot  = null;
-    let pendingField = null;
 
     const fileInput = document.createElement('input');
     fileInput.type    = 'file';
@@ -743,10 +732,10 @@ function createCarousel(containerId, initialCards, onUpdate) {
 
     fileInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
-        if (!file || pendingSlot === null || !pendingField) return;
+        if (!file || pendingSlot === null) return;
         try {
             const dataUrl = await readFileAsDataUrl(file, { maxWidth: 560, maxHeight: 900, mimeType: 'image/jpeg', quality: 0.8 });
-            setCardField(pendingSlot, pendingField, dataUrl);
+            setCardField(pendingSlot, dataUrl);
         } catch (err) {
             console.error(err);
         }
@@ -754,7 +743,7 @@ function createCarousel(containerId, initialCards, onUpdate) {
     });
 
     function getFilledCards() {
-        return cards.filter(c => c.dataUrl !== null || c.meaningDataUrl !== null);
+        return cards.filter(c => c.dataUrl !== null);
     }
 
     function ensureEmptySlot() {
@@ -762,15 +751,14 @@ function createCarousel(containerId, initialCards, onUpdate) {
         cards = [...filledCards, makeEmptyCard(filledCards.length)];
     }
 
-    function triggerUpload(idx, field) {
+    function triggerUpload(idx) {
         pendingSlot  = idx;
-        pendingField = field;
         fileInput.click();
     }
 
-    function setCardField(idx, field, dataUrl) {
+    function setCardField(idx, dataUrl) {
         if (!cards[idx]) cards[idx] = makeEmptyCard(idx);
-        cards[idx][field] = dataUrl;
+        cards[idx].dataUrl = dataUrl;
         cards[idx].id = cards[idx].id || generateCardId();
         ensureEmptySlot();
         render();
@@ -778,13 +766,10 @@ function createCarousel(containerId, initialCards, onUpdate) {
         if (typeof checkCustomDeckReady === 'function') checkCustomDeckReady();
     }
 
-    function clearCardField(idx, field) {
+    function clearCardField(idx) {
         if (!cards[idx]) return;
-        cards[idx][field] = null;
-        if (!cards[idx].dataUrl && !cards[idx].meaningDataUrl) {
-            if (cards.length > 1) cards.splice(idx, 1);
-            else cards[idx].id = null;
-        }
+        if (cards.length > 1) cards.splice(idx, 1);
+        else { cards[idx].dataUrl = null; cards[idx].id = null; }
         offset = Math.min(offset, Math.max(0, cards.length - CAROUSEL_VISIBLE));
         ensureEmptySlot();
         render();
@@ -792,13 +777,11 @@ function createCarousel(containerId, initialCards, onUpdate) {
         if (typeof checkCustomDeckReady === 'function') checkCustomDeckReady();
     }
 
-    // Merges a bulk-uploaded list of images into one field (move or meaning)
-    // by index, leaving the other field of each card untouched so the two
-    // upload rows can be filled in any order.
-    function setFieldImages(field, dataUrls) {
+    // Merges a bulk-uploaded list of move images by index.
+    function setMoveImages(dataUrls) {
         dataUrls.forEach((dataUrl, idx) => {
             if (!cards[idx]) cards[idx] = makeEmptyCard(idx);
-            cards[idx][field] = dataUrl;
+            cards[idx].dataUrl = dataUrl;
             cards[idx].id = cards[idx].id || generateCardId();
         });
         offset = 0;
@@ -812,10 +795,9 @@ function createCarousel(containerId, initialCards, onUpdate) {
         replaceCards(nextCards) {
             cards = (nextCards.length > 0 ? nextCards : [makeEmptyCard(0)])
                 .map((card, idx) => ({
-                    id: (card.dataUrl || card.meaningDataUrl) ? (card.id || generateCardId()) : null,
+                    id: card.dataUrl ? (card.id || generateCardId()) : null,
                     name: card.name || getAutoCardName(idx),
                     dataUrl: card.dataUrl || null,
-                    meaningDataUrl: card.meaningDataUrl || null,
                 }));
             offset = 0;
             ensureEmptySlot();
@@ -823,15 +805,13 @@ function createCarousel(containerId, initialCards, onUpdate) {
             onUpdate(getFilledCards());
             if (typeof checkCustomDeckReady === 'function') checkCustomDeckReady();
         },
-        setMoveImages(dataUrls) { setFieldImages('dataUrl', dataUrls); },
-        setMeaningImages(dataUrls) { setFieldImages('meaningDataUrl', dataUrls); },
+        setMoveImages,
     };
 
     function deleteCard(idx) {
-        const hasAny = cards[idx] && (cards[idx].dataUrl || cards[idx].meaningDataUrl);
+        const hasAny = cards[idx] && cards[idx].dataUrl;
         if (getFilledCards().length <= 1 && hasAny) {
             cards[idx].dataUrl = null;
-            cards[idx].meaningDataUrl = null;
             cards[idx].id = null;
         } else {
             cards.splice(idx, 1);
@@ -848,16 +828,11 @@ function createCarousel(containerId, initialCards, onUpdate) {
         render();
     }
 
-    function buildImageSlot(realIdx, field, label) {
+    function buildImageSlot(realIdx) {
         const wrap = document.createElement('div');
         wrap.className = 'card-slot-wrap';
 
-        const labelEl = document.createElement('div');
-        labelEl.className = 'card-slot-label';
-        labelEl.textContent = label;
-        wrap.appendChild(labelEl);
-
-        const value = cards[realIdx][field];
+        const value = cards[realIdx].dataUrl;
         const slot = document.createElement('div');
         slot.className = 'card-slot' + (value ? ' filled' : '');
 
@@ -871,12 +846,12 @@ function createCarousel(containerId, initialCards, onUpdate) {
 
             const replBtn = document.createElement('button');
             replBtn.textContent = 'Replace';
-            replBtn.onclick = () => triggerUpload(realIdx, field);
+            replBtn.onclick = () => triggerUpload(realIdx);
 
             const clearBtn = document.createElement('button');
             clearBtn.textContent = 'Clear';
             clearBtn.className   = 'del-btn';
-            clearBtn.onclick     = () => clearCardField(realIdx, field);
+            clearBtn.onclick     = () => clearCardField(realIdx);
 
             overlay.appendChild(replBtn);
             overlay.appendChild(clearBtn);
@@ -889,7 +864,7 @@ function createCarousel(containerId, initialCards, onUpdate) {
                 <path d="M12 36a8 8 0 01-1.5-15.8A10 10 0 1132 28h2a6 6 0 000-12h-1A10 10 0 0012 28v8z" stroke="white" stroke-width="2" fill="none"/>
             </svg><span>Click or drop</span>`;
             slot.appendChild(ph);
-            slot.onclick = () => triggerUpload(realIdx, field);
+            slot.onclick = () => triggerUpload(realIdx);
 
             slot.addEventListener('dragover', (e) => {
                 e.preventDefault();
@@ -904,7 +879,7 @@ function createCarousel(containerId, initialCards, onUpdate) {
                 const file = e.dataTransfer.files[0];
                 if (!file || !file.type.startsWith('image/')) return;
                 const reader = new FileReader();
-                reader.onload = (ev) => setCardField(realIdx, field, ev.target.result);
+                reader.onload = (ev) => setCardField(realIdx, ev.target.result);
                 reader.readAsDataURL(file);
             });
         }
@@ -952,8 +927,7 @@ function createCarousel(containerId, initialCards, onUpdate) {
 
             if (!card) { cardsEl.appendChild(col); return; }
 
-            col.appendChild(buildImageSlot(realIdx, 'dataUrl', 'Move'));
-            col.appendChild(buildImageSlot(realIdx, 'meaningDataUrl', 'Meaning'));
+            col.appendChild(buildImageSlot(realIdx));
 
             const nameInput = document.createElement('input');
             nameInput.type        = 'text';
@@ -966,7 +940,7 @@ function createCarousel(containerId, initialCards, onUpdate) {
             };
             col.appendChild(nameInput);
 
-            if (card.dataUrl || card.meaningDataUrl) {
+            if (card.dataUrl) {
                 const removeBtn = document.createElement('button');
                 removeBtn.type = 'button';
                 removeBtn.className = 'carousel-card-remove';
@@ -1011,24 +985,12 @@ async function readFilesAsDataUrls(files) {
     return dataUrls;
 }
 
-// Move and meaning images are uploaded as two separate rows and merged by
-// index into the same card list, so either row can be filled first or
-// re-uploaded without wiping out the other.
 async function handleBulkCardUpload(event) {
     const files = Array.from(event.target.files || []).filter(file => file.type.startsWith('image/'));
     if (!files.length || !activeDeckCarouselApi) return;
 
     const dataUrls = await readFilesAsDataUrls(files);
     activeDeckCarouselApi.setMoveImages(dataUrls);
-    event.target.value = '';
-}
-
-async function handleBulkMeaningUpload(event) {
-    const files = Array.from(event.target.files || []).filter(file => file.type.startsWith('image/'));
-    if (!files.length || !activeDeckCarouselApi) return;
-
-    const dataUrls = await readFilesAsDataUrls(files);
-    activeDeckCarouselApi.setMeaningImages(dataUrls);
     event.target.value = '';
 }
 
@@ -1126,7 +1088,6 @@ function buildDeckConfigEntry(deckData) {
         type:    deckData.type,
         custom:  true,
         cardMap:    Object.fromEntries(validCards.map(c => [c.id, c.dataUrl])),
-        meaningMap: Object.fromEntries(validCards.filter(c => c.meaningDataUrl).map(c => [c.id, c.meaningDataUrl])),
         nameMap:    Object.fromEntries(validCards.map(c => [c.id, c.name])),
         descriptionMap: Object.fromEntries(validCards.filter(c => c.description).map(c => [c.id, c.description])),
     };
@@ -1282,15 +1243,6 @@ function openCardDetailPopup(deckName, cardId) {
 
     const image = document.getElementById('cardDetailImage');
     image.src = getCardImagePath(deckName, cardId) || '';
-
-    const meaningImage = document.getElementById('cardDetailMeaningImage');
-    const meaningSrc = getMeaningImagePath(deckName, cardId);
-    if (meaningSrc) {
-        meaningImage.src = meaningSrc;
-        meaningImage.style.display = 'block';
-    } else {
-        meaningImage.style.display = 'none';
-    }
 
     const description = getCardDescription(deckName, cardId);
     const descEl = document.getElementById('cardDetailDescription');
@@ -1565,10 +1517,9 @@ function createDeck() {
 // DRAW CARD
 // =============================================================================
 
-// Builds one card face (either the move card or the meaning card below it).
-function buildCardFace({ imgSrc, fallbackText, isCircular, pos, size, rotate, extraClass }) {
+function buildCardFace({ imgSrc, fallbackText, isCircular, pos, size, rotate }) {
     const cardDiv = document.createElement("div");
-    cardDiv.className = "card" + (isCircular ? " circular" : "") + (extraClass ? ` ${extraClass}` : "");
+    cardDiv.className = "card" + (isCircular ? " circular" : "");
 
     if (imgSrc) {
         const safePath = imgSrc.replace(/ /g, "%20");

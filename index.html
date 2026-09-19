@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Qi Gong</title>
-<link rel="stylesheet" href="sage.css?v=9">
+<link rel="stylesheet" href="sage.css?v=10">
 </head>
 
 <body>
@@ -209,7 +209,6 @@
     <button id="cardDetailClose" title="Close">✕</button>
     <h3 id="cardDetailName"></h3>
     <img id="cardDetailImage" alt="">
-    <img id="cardDetailMeaningImage" alt="">
     <p id="cardDetailDescription"></p>
   </div>
 </div>
@@ -425,18 +424,10 @@
             </div>
           </div>
 
-          <div class="customDeckField">
-            <label>Meaning Images</label>
-            <div class="customDeckUploadRow">
-              <label class="customDeckUploadBtn" for="customDeckMeaningInput">Upload folder or files…</label>
-              <input type="file" id="customDeckMeaningInput" accept="image/*" multiple webkitdirectory directory onchange="handleBulkMeaningUpload(event)" />
-              <span>Meaning for each move, in the same order</span>
-            </div>
-          </div>
         </div>
 
         <div id="customDeckPreviewPanel">
-          <div class="customDeckPanelHeader">Move &amp; Meaning Images</div>
+          <div class="customDeckPanelHeader">Move Images</div>
           <div id="createCarousel" class="deckCarousel"></div>
         </div>
 
@@ -466,6 +457,6 @@
 </div>
 
 <!-- Scripts — always last, only once -->
-<script src="sage.js?v=3"></script>
+<script src="sage.js?v=4"></script>
 </body>
 </html>
