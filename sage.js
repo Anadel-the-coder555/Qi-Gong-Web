@@ -453,8 +453,12 @@ let customDeckTab      = 'qigong';
 let editingDeckId      = null;
 let activeDeckCarouselApi = null;
 
-const CUSTOM_DECKS_STORAGE_KEY = 'customDecks';
-const CUSTOM_DECKS_DB_NAME = 'white-sage-custom-decks';
+// Named uniquely (not "white-sage-...") so this app never again shares
+// storage with a sibling site on the same origin — localStorage/IndexedDB
+// partition by origin only, not by page or folder, so a reused generic name
+// silently merges two unrelated apps' data together.
+const CUSTOM_DECKS_STORAGE_KEY = 'qiGongWebCustomDecks';
+const CUSTOM_DECKS_DB_NAME = 'qi-gong-web-custom-decks';
 const CUSTOM_DECKS_DB_VERSION = 1;
 const CUSTOM_DECKS_STORE_NAME = 'decks';
 
