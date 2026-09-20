@@ -1453,13 +1453,12 @@ async function deleteCustomDeck(id, btnEl) {
 function selectDeck(deckName) {
     currentDeckName = deckName;
     currentDeck     = [...deckConfig[deckName].cards];
-    // layoutIndex counts spread positions filled and is shared across every
-    // deck in the session — without resetting it here, switching decks
-    // silently "runs out" of positions early (drawCard just bounces the
-    // card back with nothing shown) once the running total hits the
-    // layout's position count.
-    layoutIndex = 0;
-    document.getElementById("table").innerHTML = "";
+    // Deliberately does NOT reset layoutIndex or clear the table — switching
+    // decks only swaps which deck's tray you're drawing from. Whatever's
+    // already placed on the table stays put, so decks can be freely mixed
+    // within one reading. The layout's position cap (drawOrder.length) still
+    // holds because layoutIndex tracks cards placed across all decks
+    // combined, not per-deck. Use Refresh Reading to start over.
     createDeck();
 }
 
